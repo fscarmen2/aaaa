@@ -62,7 +62,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 使用以下命令进行无交互式安装，可以通过命令行参数指定配置：
 
 <details>
-    <summary> # 示例1：使用中文界面，指定服务器IP、端口、API前缀和无TLS加密（点击即可展开或收起）</summary>
+    <summary> 示例1：使用中文界面，指定服务器IP、端口、API前缀和无TLS加密（点击即可展开或收起）</summary>
 <br>
 
 ```bash
@@ -77,7 +77,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 </details>
 
 <details>
-    <summary> # 示例2：使用英文界面，指定服务器IP、端口、API前缀和自签名证书）</summary>
+    <summary> 示例2：使用英文界面，指定服务器IP、端口、API前缀和自签名证书）</summary>
 <br>
   
 ```bash
@@ -92,7 +92,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 </details>
 
 <details>
-    <summary> # 示例3：使用中文界面，指定服务器IP、端口、API前缀、自定义证书及证书文件路径</summary>
+    <summary> 示例3：使用中文界面，指定服务器IP、端口、API前缀、自定义证书及证书文件路径</summary>
 <br>
 
 ```bash
