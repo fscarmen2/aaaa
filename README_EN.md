@@ -37,13 +37,13 @@ This script provides easy-to-use master mode (API mode) installation, configurat
 1. Download and execute the script:
 
 ```bash
-bash <$(wget -qO- https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh)
 ```
 
 or
 
 ```bash
-bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh)
+bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh)
 ```
 
 2. Follow the prompts to select language (default is Chinese)
@@ -64,7 +64,7 @@ Use the following commands for non-interactive installation with command-line pa
 <br>
 
 ```bash
-bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
+bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
   -i \
   --language zh \
   --server_ip 127.0.0.1 \
@@ -79,7 +79,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 <br>
   
 ```bash
-bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
+bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
   -i \
   --language en \
   --server_ip localhost \
@@ -94,7 +94,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 <br>
 
 ```bash
-bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
+bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
   -i \
   --language zh \
   --server_ip 1.2.3.4 \
