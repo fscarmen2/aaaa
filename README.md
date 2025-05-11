@@ -18,7 +18,7 @@ NodePass 通用TCP/UDP隧道解决方案，免配置单文件多模式，采用�
 
 本脚本提供了简单易用的 master 模式，即 API 模式的安装、配置和管理功能。
 
-[English](README_en.md) | 简体中文
+[English](README_EN.md) | 简体中文
 
 ## 项目特点
 
