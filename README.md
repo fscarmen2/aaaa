@@ -37,13 +37,13 @@ NodePass 通用TCP/UDP隧道解决方案，免配置单文件多模式，采用�
 1. 下载并执行脚本：
 
 ```bash
-bash <$(wget -qO- https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh)
 ```
 
 或
 
 ```bash
-bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh)
+bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh)
 ```
 
 2. 按照界面提示选择语言（默认中文）
@@ -64,7 +64,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 <br>
 
 ```bash
-bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
+bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
   -i \
   --language zh \
   --server_ip 127.0.0.1 \
@@ -79,7 +79,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 <br>
   
 ```bash
-bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
+bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
   -i \
   --language en \
   --server_ip localhost \
@@ -94,7 +94,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 <br>
 
 ```bash
-bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
+bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
   -i \
   --language zh \
   --server_ip 1.2.3.4 \
