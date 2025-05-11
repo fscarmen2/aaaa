@@ -74,6 +74,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
   --prefix api \
   --tls_mode 0
 ```
+</details>
 
 <details>
     <summary> # 示例2：使用英文界面，指定服务器IP、端口、API前缀和自签名证书）</summary>
@@ -88,6 +89,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
   --prefix api \
   --tls_mode 1
 ```
+</details>
 
 <details>
     <summary> # 示例3：使用中文界面，指定服务器IP、端口、API前缀、自定义证书及证书文件路径</summary>
@@ -104,6 +106,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
   --cert_file /tmp/cert.pem \
   --key_file /tmp/key.pem
 ```
+</details>
 
 如果不指定参数，将使用默认配置：
 - 服务器 IP: 127.0.0.1
