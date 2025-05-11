@@ -62,7 +62,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 Use the following commands for non-interactive installation with command-line parameters:
 
 <details>
-    <summary> Example 1: Chinese interface, specify server IP, port, API prefix, and no TLS encryption（Click to expand or collapse）</summary>
+    <summary> Example 1: Chinese, specify server IP, port, API prefix, and no TLS encryption（Click to expand or collapse）</summary>
 <br>
 
 ```bash
@@ -77,7 +77,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 </details>
 
 <details>
-    <summary> Example 2: English interface, specify server IP, port, API prefix, and self-signed certificate（Click to expand or collapse）</summary>
+    <summary> Example 2: English, specify server IP, port, API prefix, and self-signed certificate（Click to expand or collapse）</summary>
 <br>
   
 ```bash
@@ -92,7 +92,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 </details>
 
 <details>
-    <summary> Example 3: Chinese interface, specify server IP, port, API prefix, custom certificate and certificate file paths（Click to expand or collapse）</summary>
+    <summary> Example 3: Chinese, specify server IP, port, API prefix, custom certificate and certificate file paths（Click to expand or collapse）</summary>
 <br>
 
 ```bash
