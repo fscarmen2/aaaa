@@ -1,10 +1,24 @@
 # NodePass 部署脚本
 
+## 目录
+- [项目说明](#项目说明)
+- [项目特点](#项目特点)
+- [部署方法](#部署方法)
+  - [交互式部署](#交互式部署)
+  - [无交互式部署](#无交互式部署)
+- [部署后的快捷指令](#部署后的快捷指令)
+- [系统要求](#系统要求)
+- [问题反馈](#问题反馈)
+
+# NodePass 部署脚本
+
 ## 项目说明
 
 NodePass 通用TCP/UDP隧道解决方案，免配置单文件多模式，采用控制数据双路分离架构，内置零延迟自适应连接池，实现跨网络限制的快速安全访问。
 
 本脚本提供了简单易用的 master 模式，即 API 模式的安装、配置和管理功能。
+
+[English](README_en.md) | 简体中文
 
 ## 项目特点
 
@@ -38,7 +52,7 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 3. 在主菜单中选择"安装 NodePass"
 4. 根据提示输入以下信息：
    - 服务器 IP（默认为 127.0.0.1）
-   - 端口号（1000-65535，留空则使用随机端口）
+   - 端口号（1000-65535，留空则使用 1024-8191 的随机端口）
    - API 前缀（默认为 /）
    - TLS 模式（0: 无加密, 1: 自签名证书, 2: 自定义证书）
 5. 等待安装完成
@@ -85,5 +99,3 @@ bash np.sh -i --language zh --server_ip 1.2.3.4 --user_port 18080 --prefix api -
 ## 问题反馈
 
 如遇到问题，请前往 [GitHub Issues](https://github.com/NodePassProject/nodepass-core/issues) 提交反馈。
-
-        
