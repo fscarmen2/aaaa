@@ -1,5 +1,13 @@
 # NodePass Deployment Script
 
+## Introduction
+
+NodePass is a universal TCP/UDP tunnel solution with configuration-free single-file multi-mode operation. It employs a control-data dual-path separation architecture with built-in zero-latency adaptive connection pooling, enabling fast and secure access across network restrictions.
+
+This script provides easy-to-use master mode (API mode) installation, configuration, and management functions.
+
+[简体中文](README.md) | English
+
 ## Table of Contents
 - [Introduction](#introduction)
 - [Features](#features)
@@ -9,16 +17,6 @@
 - [Quick Commands](#quick-commands)
 - [System Requirements](#system-requirements)
 - [Feedback](#feedback)
-
-# NodePass Deployment Script
-
-## Introduction
-
-NodePass is a universal TCP/UDP tunnel solution with configuration-free single-file multi-mode operation. It employs a control-data dual-path separation architecture with built-in zero-latency adaptive connection pooling, enabling fast and secure access across network restrictions.
-
-This script provides easy-to-use master mode (API mode) installation, configuration, and management functions.
-
-[简体中文](README.md) | English
 
 ## Features
 
