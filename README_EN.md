@@ -61,16 +61,52 @@ bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-cor
 
 Use the following commands for non-interactive installation with command-line parameters:
 
+<details>
+    <summary> Example 1: Chinese interface, specify server IP, port, API prefix, and no TLS encryption（Click to expand or collapse）</summary>
+<br>
+
 ```bash
-# Example 1: Chinese interface, specify server IP, port, API prefix, and no TLS encryption
-bash np.sh -i --language zh --server_ip 127.0.0.1 --user_port 18080 --prefix api --tls_mode 0
-
-# Example 2: English interface, specify server IP, port, API prefix, and self-signed certificate
-bash np.sh -i --language en --server_ip localhost --user_port 18080 --prefix api --tls_mode 1
-
-# Example 3: Chinese interface, specify server IP, port, API prefix, custom certificate and certificate file paths
-bash np.sh -i --language zh --server_ip 1.2.3.4 --user_port 18080 --prefix api --tls_mode 2 --cert_file /tmp/cert.pem --key_file /tmp/key.pem
+bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
+  -i \
+  --language zh \
+  --server_ip 127.0.0.1 \
+  --user_port 18080 \
+  --prefix api \
+  --tls_mode 0
 ```
+</details>
+
+<details>
+    <summary> Example 2: English interface, specify server IP, port, API prefix, and self-signed certificate（Click to expand or collapse）</summary>
+<br>
+  
+```bash
+bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
+  -i \
+  --language en \
+  --server_ip localhost \
+  --user_port 18080 \
+  --prefix api \
+  --tls_mode 1
+```
+</details>
+
+<details>
+    <summary> Example 3: Chinese interface, specify server IP, port, API prefix, custom certificate and certificate file paths（Click to expand or collapse）</summary>
+<br>
+
+```bash
+bash <$(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core/main/np.sh) \
+  -i \
+  --language zh \
+  --server_ip 1.2.3.4 \
+  --user_port 18080 \
+  --prefix api \
+  --tls_mode 2 \
+  --cert_file /tmp/cert.pem \
+  --key_file /tmp/key.pem
+```
+</details>
 
 If parameters are not specified, default configuration will be used:
 - Server IP: 127.0.0.1
