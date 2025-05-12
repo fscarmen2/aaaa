@@ -50,7 +50,7 @@ bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core
 3. Choose "Install NodePass" from the main menu
 4. Enter the following information as prompted:
    - Server IP (default is 127.0.0.1)
-   - Port number (1000-65535, leave empty for random port between 1024-8191)
+   - Port number (1000-65535, leave empty for random port between 1024-8192)
    - API prefix (default is /)
    - TLS mode (0: no encryption, 1: self-signed certificate, 2: custom certificate)
 5. Wait for installation to complete
@@ -108,8 +108,8 @@ bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core
 
 If parameters are not specified, default configuration will be used:
 - Server IP: 127.0.0.1
-- Port: Random port
-- API prefix: /
+- Port: 1024-8192 Random port
+- API prefix: api
 - TLS mode: No encryption
 
 ## Quick Commands
