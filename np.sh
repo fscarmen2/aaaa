@@ -21,14 +21,14 @@ E[0]="\n Language:\n 1. 简体中文 (default)\n 2. English"
 C[0]="${E[0]}"
 E[1]="1. Client's Warp mode (network interface) has been fixed to deal with the problem that it does not work after reboot; 2. Fixed the regularity of Team IPv6 judgment."
 C[1]="1. Client 的 Warp 模式(网络接口)处理了重启后不工作的问题; 2. 修正 Team IPv6 判断的正则"
-E[2]="The script must be run as root, you can enter sudo -i and then download and run again. Feedback: [https://github.com/NodePassProject/nodepass-core/issues]"
-C[2]="必须以root方式运行脚本，可以输入 sudo -i 后重新下载运行，问题反馈:[https://github.com/NodePassProject/nodepass-core/issues]"
+E[2]="The script must be run as root, you can enter sudo -i and then download and run again. Feedback: [https://github.com/yosebyte/nodepass/issues]"
+C[2]="必须以root方式运行脚本，可以输入 sudo -i 后重新下载运行，问题反馈:[https://github.com/yosebyte/nodepass/issues]"
 E[3]="Unsupported architecture: \$(uname -m)"
 C[3]="不支持的架构: \$(uname -m)"
 E[4]="Please choose: "
 C[4]="请选择: "
-E[5]="The script supports Linux systems only. Feedback: [https://github.com/NodePassProject/nodepass-core/issues]"
-C[5]="本脚本只支持 Linux 系统，问题反馈:[https://github.com/NodePassProject/nodepass-core/issues]"
+E[5]="The script supports Linux systems only. Feedback: [https://github.com/yosebyte/nodepass/issues]"
+C[5]="本脚本只支持 Linux 系统，问题反馈:[https://github.com/yosebyte/nodepass/issues]"
 E[6]="NodePass help menu"
 C[6]="NodePass 帮助菜单"
 E[7]="Install dependence-list:"
@@ -45,8 +45,8 @@ E[12]="Please enter the correct server IP (press Enter for localhost 127.0.0.1):
 C[12]="请输入确认的服务器 IP (直接回车使用本地地址 127.0.0.1):"
 E[13]="Please enter the port (1000-65535, leave empty for random port):"
 C[13]="请输入端口 (1000-65535，留空则使用随机端口):"
-E[14]="Please enter API prefix (default path is /):"
-C[14]="请输入 API 前缀 (可选API路径默认/):"
+E[14]="Please enter API prefix (default is \"api\", press Enter to use default):"
+C[14]="请输入 API 前缀 (默认为 \"api\"，直接回车使用默认值):"
 E[15]="Please select TLS mode (leave empty for no TLS encryption):"
 C[15]="请选择TLS模式 (留空表示不使用TLS加密):"
 E[16]="0. No TLS encryption (plain TCP/UDP) - Fastest performance, no overhead (default)\n 1. Self-signed certificate (auto-generated) - Good security with simple setup\n 2. Custom certificate (requires pre-prepared crt and key files) - Highest security with certificate validation"
@@ -81,10 +81,10 @@ E[30]="Upgrade NodePass"
 C[30]="升级 NodePass"
 E[31]="Exit"
 C[31]="退出"
-E[32]="Not install"
+E[32]="not installed"
 C[32]="未安装"
-E[33]="stop"
-C[33]="停止"
+E[33]="stopped"
+C[33]="已停止"
 E[34]="running"
 C[34]="运行中"
 E[35]="NodePass Installation Information:"
@@ -385,9 +385,9 @@ check_port() {
 check_cdn() {
   if [ -n "$GH_PROXY" ]; then
     if [ "$DOWNLOAD_TOOL" = "wget" ]; then
-      wget --server-response --quiet --output-document=/dev/null --no-check-certificate --tries=2 --timeout=3 https://raw.githubusercontent.com/NodePassProject/nodepass-core/refs/heads/main/README.md >/dev/null 2>&1 && unset GH_PROXY
+      wget --server-response --quiet --output-document=/dev/null --no-check-certificate --tries=2 --timeout=3 https://raw.githubusercontent.com/yosebyte/nodepass/refs/heads/main/README.md >/dev/null 2>&1 && unset GH_PROXY
     else
-      curl -sL --connect-timeout 3 --max-time 3 https://raw.githubusercontent.com/NodePassProject/nodepass-core/refs/heads/main/README.md -o /dev/null >/dev/null 2>&1 && unset GH_PROXY
+      curl -sL --connect-timeout 3 --max-time 3 https://raw.githubusercontent.com/yosebyte/nodepass/refs/heads/main/README.md -o /dev/null >/dev/null 2>&1 && unset GH_PROXY
     fi
   fi
 }
@@ -428,12 +428,18 @@ get_api_url() {
 
   # 检查是否已安装
   if [ -s "$WORK_DIR/nodepass.gob" ]; then
-    # 在容器环境中直接从进程命令行获取参数
+    # 在容器环境中优先从data文件获取参数
     if [ "$IN_CONTAINER" = 1 ] || [ "$SERVICE_MANAGE" = "none" ]; then
-      if [ $(type -p pgrep) ]; then
-        local CMD_LINE=$(pgrep -af "nodepass" | grep -v "grep\|sed" | sed -n 's/.*nodepass \(.*\)/\1/p')
+      if [ -s "$WORK_DIR/data" ] && grep -q "CMD=" "$WORK_DIR/data" ]; then
+        # 从data文件中获取CMD
+        local CMD_LINE=$(grep "CMD=" "$WORK_DIR/data" | cut -d= -f2-)
       else
-        local CMD_LINE=$(ps -ef | grep -v "grep\|sed" | grep "nodepass" | sed -n 's/.*nodepass \(.*\)/\1/p')
+        # 如果data文件中没有CMD，则从进程中获取
+        if [ $(type -p pgrep) ]; then
+          local CMD_LINE=$(pgrep -af "nodepass" | grep -v "grep\|sed" | sed -n 's/.*nodepass \(.*\)/\1/p')
+        else
+          local CMD_LINE=$(ps -ef | grep -v "grep\|sed" | grep "nodepass" | sed -n 's/.*nodepass \(.*\)/\1/p')
+        fi
       fi
     # 根据不同系统类型获取守护文件路径
     elif [ "$SERVICE_MANAGE" = "systemctl" ] && [ -s "/etc/systemd/system/nodepass.service" ]; then
@@ -537,6 +543,10 @@ on_off() {
 # 启动 NodePass 服务
 start_nodepass() {
   if [ "$IN_CONTAINER" = 1 ] || [ "$SERVICE_MANAGE" = "none" ]; then
+    # 优先从data文件中读取CMD
+    if [ -s "$WORK_DIR/data" ] && grep -q "CMD=" "$WORK_DIR/data"; then
+      CMD=$(sed -n '/^CMD=/ s/.*=\(master.*\)/\1/gp' $WORK_DIR/data)
+    fi
     nohup "$WORK_DIR/nodepass" "$CMD" >/dev/null 2>&1 &
     sleep 2
     if [ $(type -p pgrep) ]; then
@@ -784,6 +794,7 @@ install() {
 
   # API 前缀
   [ -n "$ARGS_PREFIX" ] && PREFIX="$ARGS_PREFIX" || reading "\n (3/4) $(text 14) " PREFIX
+ grep -qE '^$|^/$' <<< "$PREFIX" && PREFIX="api"
 
   # TLS 模式
   if [ -n "$ARGS_TLS_MODE" ]; then
@@ -844,17 +855,17 @@ install() {
 
   [ ! -f "$TEMP_DIR/nodepass" ] && error " $(text 9) "
 
-  # 移动到工作目录
-  # 保存语言选择和服务器IP信息到单个文件
+  # 构建命令行
+  CMD="master://${LOCALHOST}:${PORT}/${PREFIX}?log=info&tls=${TLS_MODE}${CRT_PATH:-}"
+
+  # 移动到工作目录，保存语言选择和服务器IP信息到单个文件
   mkdir -p $WORK_DIR
   echo -e "LANGUAGE=$L\nSERVER_IP=$SERVER_IP" > $WORK_DIR/data
+  [[ "$IN_CONTAINER" = 1 || "$SERVICE_MANAGE" = "none" ]] && echo -e "CMD=$CMD" >> $WORK_DIR/data
 
   # 移动NodePass可执行文件并设置权限
   mv "$TEMP_DIR/nodepass" "$WORK_DIR/"
   chmod +x "$WORK_DIR/nodepass"
-
-  # 构建命令行
-  CMD="master://${LOCALHOST}:${PORT}/${PREFIX}?log=info&tls=${TLS_MODE}${CRT_PATH:-}"
 
   # 创建服务文件
   create_service
@@ -875,7 +886,7 @@ install() {
     echo "------------------------"
     info " $(text 60) $(text 34) "
     info " $(text 35) "
-    info " $(text 39) ${HTTP_S}://${URL_SERVER_IP}:${PORT}/${PREFIX:+${PREFIX%/}/}v1"
+    info " $(text 39) ${HTTP_S}://${URL_SERVER_IP}:${PORT}/${PREFIX}/v1"
     info " $(text 40) ${TOKEN}"
 
     echo "------------------------"
@@ -890,7 +901,7 @@ install() {
 create_service() {
   # 如果在容器环境中，不创建服务文件，直接启动进程
   if [ "$IN_CONTAINER" = 1 ] || [ "$SERVICE_MANAGE" = "none" ]; then
-    info " $(test 21) "
+    info " $(text 21) "
     nohup "$WORK_DIR/nodepass" "$CMD" >/dev/null 2>&1 &
     return
   fi
@@ -899,7 +910,7 @@ create_service() {
     cat > /etc/systemd/system/nodepass.service << EOF
 [Unit]
 Description=NodePass Service
-Documentation=https://github.com/NodePassProject/nodepass-core
+Documentation=https://github.com/yosebyte/nodepass
 After=network.target
 
 [Service]
@@ -1033,14 +1044,14 @@ menu() {
   # 使用 echo 和转义序列清屏
   echo -e "\033[H\033[2J\033[3J"
   echo "
-╭─────────────────────────────────────────────╮
-│     ░░█▀█░█▀█░░▀█░█▀▀░█▀█░█▀█░█▀▀░█▀▀░░     │
-│     ░░█░█░█░█░█▀█░█▀▀░█▀▀░█▀█░▀▀█░▀▀█░░     │
-│     ░░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░░░▀░▀░▀▀▀░▀▀▀░░     │
-├─────────────────────────────────────────────┤
-│    >Universal TCP/UDP Tunneling Solution    │
-│    >https://github.com/yosebyte/nodepass    │
-╰─────────────────────────────────────────────╯  "
+╭───────────────────────────────────────────╮
+│    ░░█▀█░█▀█░░▀█░█▀▀░█▀█░█▀█░█▀▀░█▀▀░░    │
+│    ░░█░█░█░█░█▀█░█▀▀░█▀▀░█▀█░▀▀█░▀▀█░░    │
+│    ░░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░░░▀░▀░▀▀▀░▀▀▀░░    │
+├───────────────────────────────────────────┤
+│   >Universal TCP/UDP Tunneling Solution   │
+│   >https://github.com/yosebyte/nodepass   │
+╰───────────────────────────────────────────╯ "
   grep -qEw '0|1' <<< "$INSTALL_STATUS" && info " $(text 60)  $NODEPASS_STATUS "
   grep -q '.' <<< "$API_URL" && info " $(text 39) $API_URL "
   grep -q '.' <<< "$TOKEN" && info " $(text 40) $TOKEN "
