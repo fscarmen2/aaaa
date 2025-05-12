@@ -50,7 +50,7 @@ bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core
 3. 在主菜单中选择"安装 NodePass"
 4. 根据提示输入以下信息：
    - 服务器 IP（默认为 127.0.0.1）
-   - 端口号（1000-65535，留空则使用 1024-8191 的随机端口）
+   - 端口号（1000-65535，留空则使用 1024-8192 的随机端口）
    - API 前缀（默认为 /）
    - TLS 模式（0: 无加密, 1: 自签名证书, 2: 自定义证书）
 5. 等待安装完成
@@ -108,8 +108,8 @@ bash <(curl -sSL https://raw.githubusercontent.com/NodePassProject/nodepass-core
 
 如果不指定参数，将使用默认配置：
 - 服务器 IP: 127.0.0.1
-- 端口: 随机端口
-- API 前缀: /
+- 端口: 1024-8192 随机端口
+- API 前缀: api
 - TLS 模式: 无加密
 
 ## 部署后的快捷指令
