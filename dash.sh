@@ -6,6 +6,57 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # 无色
 
+# 函数：检查域名或IP地址格式
+validate_input() {
+  local input=$1
+  # 检查是否是有效的IPv4地址
+  if [[ $input =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    return 0
+  # 检查是否是有效的IPv6地址
+  elif [[ $input =~ ^[0-9a-fA-F:]+$ ]]; then
+    return 0
+  # 检查是否是有效的域名
+  elif [[ $input =~ ^[a-zA-Z0-9.-]+$ ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# 函数：检查端口是否在有效范围内
+validate_port() {
+    local port=$1
+    if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+        echo -e "${RED}错误：端口号 $port 无效。请提供一个在 1 到 65535 之间的端口号。${NC}"
+        return 1
+    fi
+    return 0
+}
+
+# 函数：卸载 NodePassDash
+uninstall_nodepassdash() {
+  if command -v podman &>/dev/null; then
+    CONTAINER_CMD="podman"
+  elif command -v docker &>/dev/null; then
+    CONTAINER_CMD="docker"
+  else
+    echo -e "${RED}未找到容器管理工具，无法卸载。${NC}"
+    exit 1
+  fi
+
+  if $CONTAINER_CMD inspect nodepassdash &>/dev/null; then
+    echo -e "${GREEN}正在停止并删除 nodepassdash 容器...${NC}"
+    $CONTAINER_CMD stop nodepassdash >/dev/null 2>&1
+    $CONTAINER_CMD rm nodepassdash >/dev/null 2>&1
+    rm -rf ~/nodepassdash
+    $CONTAINER_CMD rmi ghcr.io/nodepassproject/nodepassdash:latest >/dev/null 2>&1
+    echo -e "${GREEN}nodepassdash 容器已成功卸载。${NC}"
+  else
+    echo -e "${RED}未找到 nodepassdash 容器，无法卸载。${NC}"
+  fi
+  exit 0
+}
+
 # 检查是否以管理员权限运行
 if [ "$EUID" -ne 0 ]; then
   echo -e "${RED}请以管理员权限运行此脚本。${NC}"
@@ -48,32 +99,9 @@ else
   DOWNLOAD_CMD="curl -fsSL"
 fi
 
-# 函数：检查域名或IP地址格式
-validate_input() {
-  local input=$1
-  # 检查是否是有效的IPv4地址
-  if [[ $input =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    return 0
-  # 检查是否是有效的IPv6地址
-  elif [[ $input =~ ^[0-9a-fA-F:]+$ ]]; then
-    return 0
-  # 检查是否是有效的域名
-  elif [[ $input =~ ^[a-zA-Z0-9.-]+$ ]]; then
-    return 0
-  else
-    return 1
-  fi
-}
 
-# 函数：检查端口是否在有效范围内
-validate_port() {
-    local port=$1
-    if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
-        echo -e "${RED}错误：端口号 $port 无效。请提供一个在 1 到 65535 之间的端口号。${NC}"
-        return 1
-    fi
-    return 0
-}
+# 检查是否有卸载参数
+[[ "$1" == "uninstall" ]] && uninstall_nodepassdash
 
 # 询问用户输入域名或IP地址
 while true; do
