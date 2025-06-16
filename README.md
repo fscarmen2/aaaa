@@ -22,7 +22,7 @@
 
 1. **运行脚本**: 在终端中以管理员权限运行脚本：
    ```bash
-   bash dash.sh
+   bash <(curl -sSL https://raw.githubusercontent.com/fscarmen2/aaaa/refs/heads/main/dash.sh)
    ```
 
 2. **用户输入**:
