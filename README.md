@@ -22,9 +22,13 @@
 ## 使用说明
 
 1. **运行脚本**: 在终端中以管理员权限运行脚本：
-   ```bash
-   bash <(curl -sSL https://raw.githubusercontent.com/fscarmen2/aaaa/refs/heads/main/dash.sh)
-   ```
+```bash
+bash <(wget -qO- https://run.nodepass.eu/dash.sh)
+```
+或
+```
+bash <(curl -sSL https://run.nodepass.eu/dash.sh)
+```
 
 2. **用户输入**:
    - 脚本会提示您输入一个有效的域名或 IPv4/IPv6 地址。
@@ -48,5 +52,9 @@
 如果您需要卸载 NodePassDash，可以使用以下命令。将停止并删除 NodePassDash 容器，并清理相关的挂载目录和配置文件。
 
 ```bash
-bash <(curl -sSL https://raw.githubusercontent.com/fscarmen2/aaaa/refs/heads/main/dash.sh) uninstall
+bash <(wget -qO- https://run.nodepass.eu/dash.sh) uninstall
+```
+或
+```
+bash <(curl -sSL https://run.nodepass.eu/dash.sh) uninstall
 ```
