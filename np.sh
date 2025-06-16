@@ -24,7 +24,7 @@ else
   exit 1
 fi
 
-# 检查并安装 curl
+# 检查并安装 curl 或 wget
 if ! command -v curl &>/dev/null && ! command -v wget &>/dev/null; then
   echo -e "${GREEN}curl 和 wget 都未安装，正在安装 curl...${NC}"
   if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
@@ -35,23 +35,51 @@ if ! command -v curl &>/dev/null && ! command -v wget &>/dev/null; then
   fi
 fi
 
-# 选择使用 wget 或 curl
+# 选择下载命令
 if command -v wget &>/dev/null; then
   DOWNLOAD_CMD="wget -qO-"
 else
   DOWNLOAD_CMD="curl -fsSL"
 fi
 
-# 函数：检查域名或IP地址格式
+# 检查并选择容器命令（优先使用 Podman）
+if command -v podman &>/dev/null; then
+  CONTAINER_CMD="podman"
+  echo -e "${GREEN}已检测到 Podman，将使用 Podman 执行容器相关操作。${NC}"
+else
+  if ! command -v docker &>/dev/null; then
+    echo -e "${GREEN}Podman 和 Docker 都未安装，正在安装 Docker...${NC}"
+    bash <($DOWNLOAD_CMD get.docker.com) >/dev/null 2>&1
+    systemctl start docker >/dev/null 2>&1
+    systemctl enable docker >/dev/null 2>&1
+    echo -e "${GREEN}Docker 安装完成。${NC}"
+    DAEMON_JSON="/etc/docker/daemon.json"
+    if [ -f $DAEMON_JSON ]; then
+      cp $DAEMON_JSON $DAEMON_JSON.bak
+    fi
+    cat >$DAEMON_JSON <<EOF
+{
+  "ipv6": true,
+  "fixed-cidr-v6": "fd00::/80",
+  "experimental": true,
+  "ip6tables": true
+}
+EOF
+    systemctl restart docker >/dev/null 2>&1
+    echo -e "${GREEN}Docker 服务已重启。${NC}"
+  else
+    echo -e "${GREEN}Docker 已安装。${NC}"
+  fi
+  CONTAINER_CMD="docker"
+fi
+
+# 验证输入格式
 validate_input() {
   local input=$1
-  # 检查是否是有效的IPv4地址
   if [[ $input =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     return 0
-  # 检查是否是有效的IPv6地址
   elif [[ $input =~ ^[0-9a-fA-F:]+$ ]]; then
     return 0
-  # 检查是否是有效的域名
   elif [[ $input =~ ^[a-zA-Z0-9.-]+$ ]]; then
     return 0
   else
@@ -59,7 +87,7 @@ validate_input() {
   fi
 }
 
-# 询问用户输入域名或IP地址
+# 输入域名或IP
 while true; do
   read -p "$(echo -e ${YELLOW}请输入域名或IPv4/IPv6地址（此项为必填）： ${NC})" INPUT
   if validate_input "$INPUT"; then
@@ -70,82 +98,24 @@ while true; do
   fi
 done
 
-# 询问用户使用的端口，默认是3000
+# 输入端口号
 while true; do
   read -p "$(echo -e ${YELLOW}请输入要使用的端口（默认3000）： ${NC})" PORT
-  PORT=${PORT:-3000} # 如果未输入，则使用默认值3000
-
-  # 检查端口是否被占用
-  if command -v lsof &>/dev/null; then
-    if lsof -i:$PORT &>/dev/null; then
-      echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
-      continue
-    fi
-  elif command -v netstat &>/dev/null; then
-    if netstat -tuln | grep ":$PORT" &>/dev/null; then
-      echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
-      continue
-    fi
-  elif command -v ss &>/dev/null; then
-    if ss -tuln | grep ":$PORT" &>/dev/null; then
-      echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
-      continue
-    fi
-  else
-    echo -e "${GREEN}未检测到 lsof、netstat 或 ss，正在安装 iproute2...${NC}"
-    if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
-      apt update >/dev/null 2>&1
-      apt install -y iproute2 >/dev/null 2>&1
-    elif [ "$OS" == "centos" ]; then
-      yum install -y iproute >/dev/null 2>&1
-    fi
-    echo -e "${GREEN}iproute2 安装完成，正在检查端口...${NC}"
-    if ss -tuln | grep ":$PORT" &>/dev/null; then
-      echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
-      continue
-    fi
+  PORT=${PORT:-3000}
+  if command -v lsof &>/dev/null && lsof -i:$PORT &>/dev/null; then
+    echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
+    continue
+  elif command -v netstat &>/dev/null && netstat -tuln | grep ":$PORT" &>/dev/null; then
+    echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
+    continue
+  elif command -v ss &>/dev/null && ss -tuln | grep ":$PORT" &>/dev/null; then
+    echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
+    continue
   fi
-  break # 端口未被占用，退出循环
+  break
 done
 
-# 检测 Docker 是否已安装
-if ! command -v docker &>/dev/null; then
-  echo -e "${GREEN}Docker 未安装，正在安装...${NC}"
-  # 使用官方脚本安装 Docker
-  bash <($DOWNLOAD_CMD get.docker.com) >/dev/null 2>&1
-  # 启动 Docker 并开启 IPv6
-  systemctl start docker >/dev/null 2>&1
-  systemctl enable docker >/dev/null 2>&1
-  echo -e "${GREEN}Docker 安装完成，正在开启 IPv6...${NC}"
-
-  # 检查是否存在 daemon.json，如果存在则备份
-  DAEMON_JSON="/etc/docker/daemon.json"
-  if [ -f $DAEMON_JSON ]; then
-    echo -e "${GREEN}检测到已有 daemon.json，正在备份为 daemon.json.bak...${NC}"
-    cp $DAEMON_JSON $DAEMON_JSON.bak
-    echo -e "${GREEN}备份完成。${NC}"
-  fi
-
-  # 创建新的 daemon.json
-  cat >$DAEMON_JSON <<EOF
-{
-  "ipv6": true,
-  "fixed-cidr-v6": "fd00::/80",
-  "experimental": true,
-  "ip6tables": true
-}
-EOF
-  echo -e "${GREEN}daemon.json 已创建，内容如下：${NC}"
-  cat $DAEMON_JSON
-
-  # 重启 Docker 服务
-  systemctl restart docker >/dev/null 2>&1
-  echo -e "${GREEN}Docker 服务已重启。${NC}"
-else
-  echo -e "${GREEN}Docker 已安装${NC}"
-fi
-
-# 检测 Caddy 是否已安装
+# 安装 Caddy
 if [[ "$INPUT" =~ ^[a-zA-Z0-9.-]+$ ]]; then
   if ! command -v caddy &>/dev/null; then
     echo -e "${GREEN}Caddy 未安装，正在安装...${NC}"
@@ -157,62 +127,39 @@ if [[ "$INPUT" =~ ^[a-zA-Z0-9.-]+$ ]]; then
       apt update >/dev/null 2>&1
       apt install -y caddy >/dev/null 2>&1
     elif [ "$OS" == "centos" ]; then
-      dnf install 'dnf-command(copr)' >/dev/null 2>&1
+      dnf install -y 'dnf-command(copr)' >/dev/null 2>&1
       dnf -y copr enable @caddy/caddy >/dev/null 2>&1
       dnf -y install caddy >/dev/null 2>&1
     fi
-
-    # 检查 Caddy 安装是否成功
-    if ! command -v caddy &>/dev/null; then
-      echo -e "${RED}Caddy 安装失败，请检查错误信息。${NC}"
-      exit 1
-    else
-      echo -e "${GREEN}Caddy 安装完成${NC}"
-    fi
-  else
-    echo -e "${GREEN}Caddy 已安装${NC}"
   fi
-
-  # 创建 Caddyfile
   CADDYFILE="/etc/caddy/Caddyfile"
-
-  # 检查是否存在 Caddyfile，如果存在则备份
   if [ -f $CADDYFILE ]; then
-    echo -e "${GREEN}检测到已有 Caddyfile，正在备份为 Caddyfile.bak...${NC}"
     cp $CADDYFILE $CADDYFILE.bak
-    echo -e "${GREEN}备份完成。${NC}"
   fi
-
-  # 创建新的 Caddyfile
   cat >$CADDYFILE <<EOF
 $INPUT {
     reverse_proxy localhost:$PORT
 }
 EOF
-  echo -e "${GREEN}Caddyfile 已创建，内容如下：${NC}"
-  cat $CADDYFILE
-
-  # 重启 Caddy 服务
   echo -e "${GREEN}正在重启 Caddy 服务...${NC}"
   systemctl restart caddy >/dev/null 2>&1
-  echo -e "${GREEN}Caddy 服务已重启。${NC}"
 fi
 
-# 创建 nodepassdash 目录
+# 创建目录
 mkdir -p ~/nodepassdash/logs ~/nodepassdash/public
 
-# 检查 nodepassdash 容器是否已存在
-if docker inspect nodepassdash &>/dev/null; then
+# 检查容器是否已存在
+if $CONTAINER_CMD inspect nodepassdash &>/dev/null; then
   echo -e "${RED}nodepassdash 容器已存在，退出脚本。${NC}"
   exit 1
 fi
 
-# 下载最新的镜像并运行 Docker 容器
+# 拉取镜像并运行容器
 echo -e "${GREEN}正在下载最新的 nodepassdash 镜像...${NC}"
-docker pull ghcr.io/nodepassproject/nodepassdash:latest
+$CONTAINER_CMD pull ghcr.io/nodepassproject/nodepassdash:latest
 
 echo -e "${GREEN}正在运行 nodepassdash 容器...${NC}"
-docker run -d \
+$CONTAINER_CMD run -d \
   --name nodepassdash \
   --restart always \
   -p $PORT:3000 \
@@ -220,13 +167,8 @@ docker run -d \
   -v ~/nodepassdash/public:/app/public \
   ghcr.io/nodepassproject/nodepassdash:latest
 
-# 获取容器日志并提取管理员账户信息
-echo -e "${GREEN}获取面板和管理员账户信息...${NC}"
-
-# 等待 5 秒以确保服务启动
+# 获取日志
 sleep 5
-
-# 显示面板地址
 if [[ "$INPUT" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo -e "${GREEN}面板地址: http://$INPUT:$PORT${NC}"
 elif [[ "$INPUT" =~ ^[0-9a-fA-F:]+$ ]]; then
@@ -235,4 +177,4 @@ else
   echo -e "${GREEN}面板地址: https://$INPUT${NC}"
 fi
 
-docker logs nodepassdash 2>&1 | grep -A 5 "管理员账户信息："
+$CONTAINER_CMD logs nodepassdash 2>&1 | grep -A 5 "管理员账户信息："
