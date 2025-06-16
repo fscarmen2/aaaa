@@ -97,15 +97,21 @@ while true; do
   fi
 
   # 检查端口是否被占用
-  if command -v lsof &>/dev/null && lsof -i:$PORT &>/dev/null; then
-    echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
-    continue
-  elif command -v netstat &>/dev/null && netstat -tuln | grep ":$PORT" &>/dev/null; then
-    echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
-    continue
-  elif command -v ss &>/dev/null && ss -tuln | grep ":$PORT" &>/dev/null; then
-    echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
-    continue
+  if command -v lsof &>/dev/null; then
+    if lsof -i:$PORT &>/dev/null; then
+      echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
+      continue
+    fi
+  elif command -v netstat &>/dev/null; then
+    if netstat -tuln | grep ":$PORT" &>/dev/null; then
+      echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
+      continue
+    fi
+  elif command -v ss &>/dev/null; then
+    if ss -tuln | grep ":$PORT" &>/dev/null; then
+      echo -e "${RED}端口 $PORT 已被占用，请选择其他端口。${NC}"
+      continue
+    fi
   else
     echo -e "${GREEN}未检测到 lsof、netstat 或 ss，正在安装 iproute2...${NC}"
     if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
