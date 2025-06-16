@@ -8,14 +8,14 @@
 
 ## 概述
 
-`dash.sh` 是一个一键脚本，用于自动安装和配置 NodePassDash。 
+`dash.sh` 是一个一键脚本，用于自动安装和配置 NodePassDash。该脚本支持通过 Docker 或 Podman 进行容器管理，提供灵活的部署选项。
 
 ## 特色
 
 - **系统支持**: 支持 Debian、Ubuntu 和 CentOS 三大主流 Linux 发行版。
 - **环境检测**: 自动检测系统环境。
-- **依赖安装**: 安装必要的依赖项，如 Docker。
-- **反向代理配置**: 配置反向代理和 Docker 容器。
+- **依赖安装**: 安装必要的依赖项，如 Docker 或 Podman。
+- **反向代理配置**: 配置反向代理和 Docker/Podman 容器。
 - **CA 证书申请**: 如果输入的是域名，脚本会自动申请 CA 证书，以确保通过 HTTPS 安全访问面板。
 
 ## 使用说明
@@ -34,9 +34,9 @@
 
 4. **端口检查**: 检查用户指定的端口是否被占用。
 
-5. **Docker 容器管理**: 下载并运行 NodePassDash Docker 容器。
+5. **Docker/Podman 容器管理**: 下载并运行 NodePassDash Docker 或 Podman 容器。
 
-6. **挂载说明**: 在运行 Docker 容器时，脚本会将以下目录挂载到容器中：
+6. **挂载说明**: 在运行 Docker/Podman 容器时，脚本会将以下目录挂载到容器中：
    - **日志目录**: `~/nodepassdash/logs` 挂载到容器的 `/app/logs`，用于存储应用程序的日志文件。
    - **公共目录**: `~/nodepassdash/public` 挂载到容器的 `/app/public`，用于存储公共访问的文件。
 
