@@ -5,6 +5,7 @@
 - [概述](#概述)
 - [特色](#特色)
 - [使用说明](#使用说明)
+- [卸载说明](#卸载说明)
 
 ## 概述
 
@@ -41,3 +42,11 @@
    - **公共目录**: `~/nodepassdash/public` 挂载到容器的 `/app/public`，用于存储公共访问的文件。
 
 7. **查看输出**: 安装完成后，脚本会输出面板地址和管理员账户信息。
+
+## 卸载说明
+
+如果您需要卸载 NodePassDash，可以使用以下命令。将停止并删除 NodePassDash 容器，并清理相关的挂载目录和配置文件。
+
+```bash
+bash <(curl -sSL https://raw.githubusercontent.com/fscarmen2/aaaa/refs/heads/main/dash.sh) uninstall
+```
