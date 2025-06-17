@@ -1,60 +1,228 @@
-# `dash.sh` 脚本说明文档
+以下是合并整理后的 NodePass 安装与管理脚本说明文档，分为两大部分：**np.sh**（主程序安装与配置）与 **dash.sh**（Web 控制面板安装）。我已为你精心设计目录结构与说明文字，清晰易懂、便于查阅。
 
-## 目录
+---
 
-- [概述](#概述)
-- [特色](#特色)
-- [使用说明](#使用说明)
-- [卸载说明](#卸载说明)
+# 📘 NodePass 安装与管理说明文档
 
-## 概述
+简体中文 | [English](README_EN.md)
 
-`dash.sh` 是一个一键脚本，用于自动安装和配置 NodePassDash。该脚本支持通过 Docker 或 Podman 进行容器管理，提供灵活的部署选项。
+---
 
-## 特色
+## 📑 目录
 
-- **系统支持**: 支持 Debian、Ubuntu 和 CentOS 三大主流 Linux 发行版。
-- **环境检测**: 自动检测系统环境。
-- **依赖安装**: 安装必要的依赖项，如 Docker 或 Podman。
-- **反向代理配置**: 配置反向代理和 Docker/Podman 容器。
-- **CA 证书申请**: 如果输入的是域名，脚本会自动申请 CA 证书，以确保通过 HTTPS 安全访问面板。
+* [项目介绍](#项目介绍)
+* [系统要求](#系统要求)
+* [一、np.sh 脚本（主程序安装）](#一npsh-脚本主程序安装)
 
-## 使用说明
+  * [功能特色](#功能特色)
+  * [部署方法](#部署方法)
 
-1. **运行脚本**: 在终端中以管理员权限运行脚本：
+    * [交互式部署](#交互式部署)
+    * [无交互式部署](#无交互式部署)
+  * [部署后的快捷指令](#部署后的快捷指令)
+  * [目录结构](#目录结构)
+* [二、dash.sh 脚本（控制面板安装）](#二dashsh-脚本控制面板安装)
+
+  * [功能特色](#功能特色-1)
+  * [使用说明](#使用说明)
+  * [卸载说明](#卸载说明)
+* [常见问题与反馈](#常见问题与反馈)
+
+---
+
+## 项目介绍
+
+**NodePass** 是一款通用 TCP/UDP 隧道解决方案，采用控制数据双路分离架构，支持零延迟连接池与多模式通信，致力于实现高性能、跨网络限制的安全访问。
+
+---
+
+## 系统要求
+
+* **操作系统**：兼容 Debian、Ubuntu、CentOS、Fedora、Alpine、Arch、OpenWRT 等
+* **系统架构**：支持 x86\_64（amd64）、aarch64（arm64）、armv7l（arm）
+* **权限要求**：需要 root 权限运行
+
+---
+
+## 一、`np.sh` 脚本（主程序安装）
+
+### 功能特色
+
+* ✅ 多系统支持
+* 🌐 支持中英文界面
+* 🔍 自动检测架构与依赖
+* 🔧 灵活配置端口、API 前缀、TLS 模式
+* 🔐 支持无加密、自签名或自定义证书
+* 🛠️ 支持服务一键启动、停止、重启、卸载
+* 🔄 自动更新保持最新版本
+* 🐳 自动识别容器环境
+
+---
+
+### 部署方法
+
+#### 交互式部署
+
 ```bash
-bash <(wget -qO- https://run.nodepass.eu/dash.sh)
+bash <(wget -qO- https://run.nodepass.eu/np.sh)
 ```
 或
+```bash
+bash <(curl -sSL https://run.nodepass.eu/np.sh)
 ```
-bash <(curl -sSL https://run.nodepass.eu/dash.sh)
+
+跟随提示操作，依次填写以下信息：
+
+* 语言选择（默认中文）
+* 服务器 IP（默认 127.0.0.1）
+* 端口（可留空，系统将自动分配 1024–8192 范围内端口）
+* API 前缀（默认 `api`）
+* TLS 模式（0: 无加密, 1: 自签名证书, 2: 自定义证书）
+
+---
+
+#### 无交互式部署（示例）
+
+<details><summary>示例1：无TLS加密</summary>
+
+```bash
+bash <(curl -sSL https://run.nodepass.eu/np.sh) \
+  -i \
+  --language zh \
+  --server_ip 127.0.0.1 \
+  --user_port 18080 \
+  --prefix api \
+  --tls_mode 0
 ```
 
-2. **用户输入**:
-   - 脚本会提示您输入一个有效的域名或 IPv4/IPv6 地址。
-   - 输入 IP 地址时，不会安装 Caddy。
-   - 输入域名时，脚本会检测并安装 Caddy，并申请 CA 证书，以确保安全访问。
+</details>
 
-3. **输入端口**: 脚本会询问您要使用的端口，默认值为 3000。
+<details><summary>示例2：自签名证书</summary>
 
-4. **端口检查**: 检查用户指定的端口是否被占用。
+```bash
+bash <(curl -sSL https://run.nodepass.eu/np.sh) \
+  -i \
+  --language en \
+  --server_ip localhost \
+  --user_port 18080 \
+  --prefix api \
+  --tls_mode 1
+```
 
-5. **Docker/Podman 容器管理**: 下载并运行 NodePassDash Docker 或 Podman 容器。
+</details>
 
-6. **挂载说明**: 在运行 Docker/Podman 容器时，脚本会将以下目录挂载到容器中：
-   - **日志目录**: `~/nodepassdash/logs` 挂载到容器的 `/app/logs`，用于存储应用程序的日志文件。
-   - **公共目录**: `~/nodepassdash/public` 挂载到容器的 `/app/public`，用于存储公共访问的文件。
+<details><summary>示例3：自定义证书</summary>
 
-7. **查看输出**: 安装完成后，脚本会输出面板地址和管理员账户信息。
+```bash
+bash <(curl -sSL https://run.nodepass.eu/np.sh) \
+  -i \
+  --language zh \
+  --server_ip 1.2.3.4 \
+  --user_port 18080 \
+  --prefix api \
+  --tls_mode 2 \
+  --cert_file </path/to/cert.pem> \
+  --key_file </path/to/key.pem>
+```
 
-## 卸载说明
+</details>
 
-如果您需要卸载 NodePassDash，可以使用以下命令。将停止并删除 NodePassDash 容器，并清理相关的挂载目录和配置文件。
+---
+
+### 部署后的快捷指令
+
+系统将创建 `np` 快捷命令：
+
+| 命令      | 功能说明        |
+| ------- | ----------- |
+| `np`    | 显示交互式菜单     |
+| `np -i` | 安装 NodePass |
+| `np -u` | 卸载 NodePass |
+| `np -v` | 升级 NodePass |
+| `np -o` | 启动/停止服务     |
+| `np -k` | 更换 API key  |
+| `np -s` | 查看 API 信息   |
+| `np -h` | 显示帮助信息      |
+
+---
+
+### 目录结构
+
+```
+/etc/nodepass/
+├── data                # 配置数据
+├── nodepass            # 主程序
+├── nodepass.gob        # 数据存储文件
+└── np.sh               # 部署脚本
+```
+
+---
+
+## 二、`dash.sh` 脚本（控制面板安装）
+
+### 功能特色
+
+* 🚀 一键部署 NodePassDash 控制面板
+* 🐧 支持 Debian、Ubuntu、CentOS
+* 🔧 自动检测系统和依赖环境
+* 🐳 支持 Docker 和 Podman 部署容器
+* 🔄 自动配置反向代理（支持 HTTPS）
+* 🔐 自动申请 CA SSL 证书（域名部署时）
+* 📂 自动挂载日志与公共资源目录
+
+---
+
+### 使用说明
+
+1. **运行脚本**：
+
+```bash
+sudo bash <(wget -qO- https://run.nodepass.eu/dash.sh)
+```
+或
+```bash
+sudo bash <(curl -sSL https://run.nodepass.eu/dash.sh)
+```
+
+2. **输入信息**：
+
+* 域名或 IP：输入域名会自动配置 HTTPS 反向代理并申请 SSL；输入 IP 则跳过反向代理与 Caddy 安装。
+* 端口：默认 3000，可自定义。
+
+3. **部署容器**：
+
+* 自动使用 Docker 或 Podman 运行面板容器
+* 检查端口是否占用
+
+4. **挂载目录**：
+
+| 主机路径                    | 容器内路径         | 用途   |
+| ----------------------- | ------------- | ---- |
+| `~/nodepassdash/logs`   | `/app/logs`   | 日志文件 |
+| `~/nodepassdash/public` | `/app/public` | 公共资源 |
+
+5. **完成提示**：脚本安装完毕后会输出访问地址和管理员账户信息。
+
+---
+
+### 卸载说明
+
+卸载 NodePassDash 控制面板：
 
 ```bash
 bash <(wget -qO- https://run.nodepass.eu/dash.sh) uninstall
 ```
 或
-```
+```bash
 bash <(curl -sSL https://run.nodepass.eu/dash.sh) uninstall
 ```
+
+将会清理容器、配置文件与挂载目录。
+
+---
+
+## 常见问题与反馈
+
+如遇到安装或使用问题，请前往 GitHub 提交 Issues：
+
+👉 [NodePass GitHub Issues](https://github.com/NodePassProject/npsh/issues)
