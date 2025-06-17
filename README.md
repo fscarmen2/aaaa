@@ -18,7 +18,7 @@
   * [部署方法](#部署方法)
 
     * [交互式部署](#交互式部署)
-    * [无交互式部署](#无交互式部署示例)
+    * [无交互式部署](#无交互式部署)
   * [部署后的快捷指令](#部署后的快捷指令)
   * [目录结构](#目录结构)
 * [二、dash.sh 脚本（控制面板安装）](#二dashsh-脚本控制面板安装)
@@ -27,6 +27,7 @@
   * [使用说明](#使用说明)
   * [卸载说明](#卸载说明)
 * [常见问题与反馈](#常见问题与反馈)
+* [部署截图](#部署截图)
 
 ---
 
@@ -81,7 +82,7 @@ bash <(curl -sSL https://run.nodepass.eu/np.sh)
 
 ---
 
-#### 无交互式部署（示例）
+#### 无交互式部署
 
 <details><summary>示例1：无TLS加密</summary>
 
@@ -226,3 +227,10 @@ bash <(curl -sSL https://run.nodepass.eu/dash.sh) uninstall
 如遇到安装或使用问题，请前往 GitHub 提交 Issues：
 
 👉 [NodePass GitHub Issues](https://github.com/NodePassProject/npsh/issues)
+
+## 部署截图
+
+<img width="690" alt="image" src="https://github.com/user-attachments/assets/4453fde6-d64a-4557-b938-13a1affcd81f" />
+
+<img width="690" alt="image" src="https://github.com/user-attachments/assets/61e01872-f401-485d-aa9a-8c1388e76a5b" />
+
