@@ -173,11 +173,11 @@ bash <(curl -sSL https://run.nodepass.eu/np.sh) \
 1. **运行脚本**：
 
 ```bash
-sudo bash <(wget -qO- https://run.nodepass.eu/dash.sh)
+bash <(wget -qO- https://run.nodepass.eu/dash.sh)
 ```
 或
 ```bash
-sudo bash <(curl -sSL https://run.nodepass.eu/dash.sh)
+bash <(curl -sSL https://run.nodepass.eu/dash.sh)
 ```
 
 2. **输入信息**：
