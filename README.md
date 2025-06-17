@@ -2,6 +2,10 @@
 
 简体中文 | [English](README_EN.md)
 
+`np.sh`: 一键部署 NodePass 主程序，提供高性能 TCP/UDP 隧道服务，支持多系统和灵活配置。
+
+`dash.sh`: 一键部署 NodePassDash 控制面板，简化隧道管理和监控，支持容器化和 HTTPS 配置。
+
 ---
 
 ## 📑 目录
