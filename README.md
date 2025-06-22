@@ -2,7 +2,6 @@
 
 ## 目录
 - [脚本介绍](#脚本介绍)
-- [系统支持](#系统支持)
 - [安装方法](#安装方法)
   - [3proxy 安装](#3proxy-安装)
   - [Xray/Sing-box 安装](#xraysing-box-安装)
@@ -28,61 +27,37 @@
 
 ---
 
-## 系统支持
-
-### 3proxy.sh
-✅ 支持系统：
-- Debian/Ubuntu (deb)
-- RHEL/CentOS/Fedora (rpm)
-- 其他 systemd 系统
-
-❌ 不支持：
-- Alpine (musl libc 兼容性问题)
-- 非 systemd 系统
-
-### http_socks5.sh
-✅ 支持系统：
-- 所有 Linux 发行版（包括 Alpine）
-- 支持 systemd 和 OpenRC 初始化系统
-
-✅ 支持架构：
-- x86_64/amd64
-- arm64/aarch64
-- armv7/armhf
-
----
-
 ## 安装方法
 
 ### 3proxy 安装
 
 ```bash
-# 下载脚本
-curl -O https://example.com/3proxy.sh
-chmod +x 3proxy.sh
-
-# 基本安装（使用默认端口）
-sudo ./3proxy.sh
-
+bash <(curl -sL https://example.com/3proxy.sh)
+```
 # 自定义端口安装
-sudo ./3proxy.sh -h 8888 -s 1088
+
+```
+bash <(curl -sL https://example.com/3proxy.sh) -h 8888 -s 1088
 ```
 
 ### Xray/Sing-box 安装
 
-```bash
-# 下载脚本
-curl -O https://example.com/http_socks5.sh
-chmod +x http_socks5.sh
-
 # 安装 Xray (默认)
-sudo ./http_socks5.sh
+
+```bash
+bash <(curl -sL https://example.com/http_socks5.sh)
+```
 
 # 安装 Sing-box
-sudo ./http_socks5.sh -t sing-box
+
+```bash
+bash <(curl -sL https://example.com/http_socks5.sh) -t sing-box
+```
 
 # 自定义端口
-sudo ./http_socks5.sh -h 8888 -s 1088
+
+```bash
+bash <(curl -sL https://example.com/http_socks5.sh) -h 8888 -s 1088
 ```
 
 ---
@@ -91,12 +66,12 @@ sudo ./http_socks5.sh -h 8888 -s 1088
 
 ### 3proxy 卸载
 ```bash
-sudo ./3proxy.sh -u
+bash <(curl -sL https://example.com/3proxy.sh) -u
 ```
 
 ### Xray/Sing-box 卸载
 ```bash
-sudo ./http_socks5.sh -u
+bash <(curl -sL https://example.com/http_socks5.sh) -u
 ```
 
 ---
