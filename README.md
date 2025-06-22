@@ -32,32 +32,32 @@
 ### 3proxy 安装
 
 ```bash
-bash <(curl -sL https://example.com/3proxy.sh)
+bash <(curl -sL https://raw.githubusercontent.com/fscarmen2/aaaa/refs/heads/main/3proxy.sh)
 ```
-# 自定义端口安装
+#### 自定义端口安装
 
 ```
-bash <(curl -sL https://example.com/3proxy.sh) -h 8888 -s 1088
+bash <(curl -sL https://raw.githubusercontent.com/fscarmen2/aaaa/refs/heads/main/3proxy.sh) -h 8888 -s 1088
 ```
 
 ### Xray/Sing-box 安装
 
-# 安装 Xray (默认)
+#### 安装 Xray (默认)
 
 ```bash
-bash <(curl -sL https://example.com/http_socks5.sh)
+bash <(curl -sL https://raw.githubusercontent.com/fscarmen2/aaaa/refs/heads/main/http_socks5.sh)
 ```
 
-# 安装 Sing-box
+#### 安装 Sing-box
 
 ```bash
-bash <(curl -sL https://example.com/http_socks5.sh) -t sing-box
+bash <(curl -sL https://raw.githubusercontent.com/fscarmen2/aaaa/refs/heads/main/http_socks5.sh) -t sing-box
 ```
 
 # 自定义端口
 
 ```bash
-bash <(curl -sL https://example.com/http_socks5.sh) -h 8888 -s 1088
+bash <(curl -sL https://raw.githubusercontent.com/fscarmen2/aaaa/refs/heads/main/http_socks5.sh) -h 8888 -s 1088
 ```
 
 ---
@@ -66,12 +66,12 @@ bash <(curl -sL https://example.com/http_socks5.sh) -h 8888 -s 1088
 
 ### 3proxy 卸载
 ```bash
-bash <(curl -sL https://example.com/3proxy.sh) -u
+bash <(curl -sL https://raw.githubusercontent.com/fscarmen2/aaaa/refs/heads/main/3proxy.sh) -u
 ```
 
 ### Xray/Sing-box 卸载
 ```bash
-bash <(curl -sL https://example.com/http_socks5.sh) -u
+bash <(curl -sL https://raw.githubusercontent.com/fscarmen2/aaaa/refs/heads/main/http_socks5.sh) -u
 ```
 
 ---
