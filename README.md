@@ -1,3 +1,12 @@
+<img width="2874" height="1244" alt="image" src="https://github.com/user-attachments/assets/d263c020-c285-4627-8831-51424243d2f9" />
+
+<img width="2172" height="1064" alt="image" src="https://github.com/user-attachments/assets/886ecb04-e758-4a37-aaa0-3e9f4adbf624" />
+
+<img width="2146" height="1274" alt="image" src="https://github.com/user-attachments/assets/e6837690-7fbc-4913-8b31-b0372351932b" />
+
+<img width="2850" height="1230" alt="image" src="https://github.com/user-attachments/assets/c911f072-f837-4658-8502-851d78dfb192" />
+
+
 # 代理服务安装脚本说明
 
 ## 目录
