@@ -75,7 +75,7 @@ echo "正在启动 NodePass 服务..."
 systemctl start nodepass 2>/dev/null || nohup "$WORK_DIR/nodepass" master:// 2>/dev/null &
 
 # 清理
-rm -rf $TEMP_DIR
+rm -rf $TEMP_DIR $WORK_DIR/*-nodepass.backup
 
 # 显示版本信息
 STABLE_VERSION=$("$WORK_DIR/stable-nodepass" 2>/dev/null | sed -n '/Version/s/.*\(v[0-9.]\+[^ ]*\).*/\1/gp')
