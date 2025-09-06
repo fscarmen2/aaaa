@@ -31,7 +31,23 @@ echo "检测到架构: $ARCH"
 # 获取最新版本信息
 echo "正在获取最新版本信息..."
 STABLE_LATEST_VERSION=$(curl -sL "https://${GH_PROXY}api.github.com/repos/yosebyte/nodepass/releases/latest" | awk -F '"' '/tag_name/{print $4}')
-DEV_LATEST_VERSION=$(curl -sL "https://${GH_PROXY}api.github.com/repos/NodePassProject/nodepass-core/releases" | awk -F '"' '/tag_name/{print $4; exit}')
+
+# 开发版通过时间判断获取最新版本
+API_MESSAGE_DEV=$(curl -sL "https://${GH_PROXY}api.github.com/repos/NodePassProject/nodepass-core/releases" | grep -E 'published_at|tag_name')
+PUBLISHED_AT_DEV=($(awk -F '"' '/published_at/{print $4}' <<< "$API_MESSAGE_DEV"))
+TAG_NAME_DEV=($(awk -F '"' '/tag_name/{print $4}' <<< "$API_MESSAGE_DEV"))
+
+# 找到最新的开发版本
+if [ ${#PUBLISHED_AT_DEV[@]} -gt 0 ]; then
+  i_dev=$(echo "${PUBLISHED_AT_DEV[@]}" | tr ' ' '\n' | awk '
+      BEGIN {max="1970-01-01T00:00:00Z"; idx=0}
+      {if ($1 > max) {max=$1; idx=NR-1}}
+      END {print idx}
+  ')
+  DEV_LATEST_VERSION="${TAG_NAME_DEV[$i_dev]}"
+else
+  DEV_LATEST_VERSION=""
+fi
 
 if [ -z "$STABLE_LATEST_VERSION" ] || [ "$STABLE_LATEST_VERSION" = "null" ] || [ -z "$DEV_LATEST_VERSION" ] || [ "$DEV_LATEST_VERSION" = "null" ]; then
   echo "无法获取最新版本"
