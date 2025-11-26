@@ -68,11 +68,11 @@ jobs:
         id: compare
         run: |
           # 解析当前版本
-          version_arr=($(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?'))
 
-          CURRENT_STANDARD=${version_arr[0]}
-          CURRENT_DEVELOPMENT=${version_arr[1]}
-          CURRENT_LTS=${version_arr[2]}
+          # 修复当前版本提取逻辑
+          CURRENT_STANDARD=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'Standard:[^[:space:]]*' | cut -d: -f2)
+          CURRENT_DEVELOPMENT=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'Development:[^[:space:]]*' | cut -d: -f2)
+          CURRENT_LTS=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'LTS:[^[:space:]]*' | cut -d: -f2)
 
           # 获取最新版本
           LATEST_STANDARD="${{ steps.latest_versions.outputs.STANDARD }}"
@@ -105,10 +105,39 @@ jobs:
             [[ "${CURRENT_LTS:-}" != "$LATEST_LTS" ]] && updated_versions+=("LTS")
 
             commit_msg=""
+            # 修复变量引用方式
             case ${#updated_versions[@]} in
-              1) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]_LATEST_VERSION}" ;;
-              2) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]_LATEST_VERSION} and ${updated_versions[1]} version to ${!updated_versions[1]_LATEST_VERSION}" ;;
-              3) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]_LATEST_VERSION}, ${updated_versions[1]} version to ${!updated_versions[1]_LATEST_VERSION} and ${updated_versions[2]} version to ${!updated_versions[2]_LATEST_VERSION}" ;;
+              1)
+                if [[ "${updated_versions[0]}" == "Standard" ]]; then
+                  commit_msg="Update ${updated_versions[0]} version to $LATEST_STANDARD"
+                elif [[ "${updated_versions[0]}" == "Development" ]]; then
+                  commit_msg="Update ${updated_versions[0]} version to $LATEST_DEVELOPMENT"
+                else
+                  commit_msg="Update ${updated_versions[0]} version to $LATEST_LTS"
+                fi
+                ;;
+              2)
+                if [[ "${updated_versions[0]}" == "Standard" ]]; then
+                  first_version="$LATEST_STANDARD"
+                elif [[ "${updated_versions[0]}" == "Development" ]]; then
+                  first_version="$LATEST_DEVELOPMENT"
+                else
+                  first_version="$LATEST_LTS"
+                fi
+
+                if [[ "${updated_versions[1]}" == "Standard" ]]; then
+                  second_version="$LATEST_STANDARD"
+                elif [[ "${updated_versions[1]}" == "Development" ]]; then
+                  second_version="$LATEST_DEVELOPMENT"
+                else
+                  second_version="$LATEST_LTS"
+                fi
+
+                commit_msg="Update ${updated_versions[0]} version to $first_version and ${updated_versions[1]} version to $second_version"
+                ;;
+              3)
+                commit_msg="Update ${updated_versions[0]} version to $LATEST_STANDARD, ${updated_versions[1]} version to $LATEST_DEVELOPMENT and ${updated_versions[2]} version to $LATEST_LTS"
+                ;;
             esac
 
             echo "commit_msg=$commit_msg" >> $GITHUB_OUTPUT
