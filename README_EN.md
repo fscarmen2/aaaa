@@ -6,7 +6,7 @@
 `dash.sh`: One-click deployment of the NodePassDash control panel, simplifying tunnel management and monitoring with containerization and HTTPS support.
 
 - Standard: v1.12.0
-- Development: v1.1332.0-b3
+- Development: v1.12.0-b3
 - LTS: v1.10.3
 
 ---
