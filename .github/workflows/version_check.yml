@@ -66,18 +66,18 @@ jobs:
         id: compare
         run: |
           # 解析当前版本
-          CURRENT_STANDARD=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'Standard:[^ ]+' | cut -d: -f2)
-          CURRENT_DEVELOPMENT=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'Development:[^ ]+' | cut -d: -f2)
-          CURRENT_LTS=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'LTS:[^ ]+' | cut -d: -f2)
+          CURRENT_STANDARD=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'Standard:[^ ]*' | cut -d: -f2-)
+          CURRENT_DEVELOPMENT=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'Development:[^ ]*' | cut -d: -f2-)
+          CURRENT_LTS=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'LTS:[^ ]*' | cut -d: -f2-)
           
           # 获取最新版本
           LATEST_STANDARD="${{ steps.latest_versions.outputs.STANDARD }}"
           LATEST_DEVELOPMENT="${{ steps.latest_versions.outputs.DEVELOPMENT }}"
           LATEST_LTS="${{ steps.latest_versions.outputs.LTS }}"
           
-          echo "Current Standard: $CURRENT_STANDARD, Latest: $LATEST_STANDARD"
-          echo "Current Development: $CURRENT_DEVELOPMENT, Latest: $LATEST_DEVELOPMENT"
-          echo "Current LTS: $CURRENT_LTS, Latest: $LATEST_LTS"
+          echo "Current Standard: ${CURRENT_STANDARD:-None}, Latest: $LATEST_STANDARD"
+          echo "Current Development: ${CURRENT_DEVELOPMENT:-None}, Latest: $LATEST_DEVELOPMENT"
+          echo "Current LTS: ${CURRENT_LTS:-None}, Latest: $LATEST_LTS"
           
           # 检查是否有任何版本不同
           if [[ "$CURRENT_STANDARD" != "$LATEST_STANDARD" ]] || [[ "$CURRENT_DEVELOPMENT" != "$LATEST_DEVELOPMENT" ]] || [[ "$CURRENT_LTS" != "$LATEST_LTS" ]]; then
@@ -102,9 +102,9 @@ jobs:
             
             commit_msg=""
             case ${#updated_versions[@]} in
-              1) commit_msg="Update ${updated_versions[0]} version" ;;
-              2) commit_msg="Update ${updated_versions[0]} and ${updated_versions[1]} versions" ;;
-              3) commit_msg="Update ${updated_versions[0]}, ${updated_versions[1]} and ${updated_versions[2]} versions" ;;
+              1) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]@L}" ;;
+              2) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]@L} and ${updated_versions[1]} version to ${!updated_versions[1]@L}" ;;
+              3) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]@L}, ${updated_versions[1]} version to ${!updated_versions[1]@L} and ${updated_versions[2]} version to ${!updated_versions[2]@L}" ;;
             esac
             
             echo "commit_msg=$commit_msg" >> $GITHUB_OUTPUT
