@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '0 0,12 * * *'  # 每天运行两次（午夜和中午）
   workflow_dispatch:  # 允许手动触发
+  push:
+    branches:
+      - '**'
 
 # 添加权限配置以允许推送更改
 permissions:
@@ -33,14 +36,14 @@ jobs:
         run: |
           # 获取 Standard 版本 (稳定版使用 latest 标签)
           STABLE_LATEST_VERSION=$(curl -sL "https://api.github.com/repos/yosebyte/nodepass/releases/latest" | awk -F '"' '/tag_name/{print $4}')
-          
+
           # 获取 Development 版本 (使用时间判断)
           API_MESSAGE_DEV=$(curl -sL "https://api.github.com/repos/NodePassProject/nodepass-core/releases" | grep -E 'published_at|tag_name')
-          
+
           # 处理开发版本
           PUBLISHED_AT_DEV=($(awk -F '"' '/published_at/{print $4}' <<< "$API_MESSAGE_DEV"))
           TAG_NAME_DEV=($(awk -F '"' '/tag_name/{print $4}' <<< "$API_MESSAGE_DEV"))
-          
+
           # 找到最新的开发版本
           if [ ${#PUBLISHED_AT_DEV[@]} -gt 0 ]; then
             i_dev=$(echo "${PUBLISHED_AT_DEV[@]}" | tr ' ' '\n' | awk '
@@ -52,14 +55,14 @@ jobs:
           else
             DEV_LATEST_VERSION=""
           fi
-          
+
           # 获取 LTS 版本
           LTS_LATEST_VERSION=$(curl -sL "https://api.github.com/repos/NodePassProject/nodepass-apt/releases/latest" | awk -F '"' '/tag_name/{print $4}')
-          
+
           echo "STANDARD=$STABLE_LATEST_VERSION" >> $GITHUB_OUTPUT
           echo "DEVELOPMENT=$DEV_LATEST_VERSION" >> $GITHUB_OUTPUT
           echo "LTS=$LTS_LATEST_VERSION" >> $GITHUB_OUTPUT
-          
+
           echo "Latest Standard: $STABLE_LATEST_VERSION"
           echo "Latest Development: $DEV_LATEST_VERSION"
           echo "Latest LTS: $LTS_LATEST_VERSION"
@@ -68,58 +71,51 @@ jobs:
         id: compare
         run: |
           # 解析当前版本
-          echo "===================="
-          echo "${{ steps.current_versions.outputs.versions }}"
-
           version_arr=($(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?'))
-          
-          echo "===================="
-          echo "${version_arr[@]}"
 
-          echo "===================="
           CURRENT_STANDARD=${version_arr[0]}
           CURRENT_DEVELOPMENT=${version_arr[1]}
           CURRENT_LTS=${version_arr[2]}
-          
+
           # 获取最新版本
           LATEST_STANDARD="${{ steps.latest_versions.outputs.STANDARD }}"
           LATEST_DEVELOPMENT="${{ steps.latest_versions.outputs.DEVELOPMENT }}"
           LATEST_LTS="${{ steps.latest_versions.outputs.LTS }}"
-          
+
           echo "Current Standard: ${CURRENT_STANDARD:-None}, Latest: $LATEST_STANDARD"
           echo "Current Development: ${CURRENT_DEVELOPMENT:-None}, Latest: $LATEST_DEVELOPMENT"
           echo "Current LTS: ${CURRENT_LTS:-None}, Latest: $LATEST_LTS"
-          
+
           # 检查是否有任何版本不同
           if [[ "${CURRENT_STANDARD:-}" != "$LATEST_STANDARD" ]] || [[ "${CURRENT_DEVELOPMENT:-}" != "$LATEST_DEVELOPMENT" ]] || [[ "${CURRENT_LTS:-}" != "$LATEST_LTS" ]]; then
             echo "New version detected. Updating README..."
             echo "needs_update=true" >> $GITHUB_OUTPUT
-            
+
             # 更新 README_EN.md 文件
             sed -i "s/- Standard: .*/- Standard: $LATEST_STANDARD/" README_EN.md
             sed -i "s/- Development: .*/- Development: $LATEST_DEVELOPMENT/" README_EN.md
             sed -i "s/- LTS: .*/- LTS: $LATEST_LTS/" README_EN.md
-            
+
             # 更新 README.md 文件
             sed -i "s/- 经典版: .*/- 经典版: $LATEST_STANDARD/" README.md
             sed -i "s/- 正式版: .*/- 正式版: $LATEST_DEVELOPMENT/" README.md
             sed -i "s/- 开发版: .*/- 开发版: $LATEST_LTS/" README.md
-            
+
             # 确定提交消息
             updated_versions=()
             [[ "${CURRENT_STANDARD:-}" != "$LATEST_STANDARD" ]] && updated_versions+=("Standard")
             [[ "${CURRENT_DEVELOPMENT:-}" != "$LATEST_DEVELOPMENT" ]] && updated_versions+=("Development")
             [[ "${CURRENT_LTS:-}" != "$LATEST_LTS" ]] && updated_versions+=("LTS")
-            
+
             commit_msg=""
             case ${#updated_versions[@]} in
               1) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]@L}" ;;
               2) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]@L} and ${updated_versions[1]} version to ${!updated_versions[1]@L}" ;;
               3) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]@L}, ${updated_versions[1]} version to ${!updated_versions[1]@L} and ${updated_versions[2]} version to ${!updated_versions[2]@L}" ;;
             esac
-            
+
             echo "commit_msg=$commit_msg" >> $GITHUB_OUTPUT
-            
+
             echo "README updated with new versions:"
             echo "  Standard: $LATEST_STANDARD"
             echo "  Development: $LATEST_DEVELOPMENT"
