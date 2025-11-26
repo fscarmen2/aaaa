@@ -72,6 +72,9 @@ jobs:
           echo "${{ steps.current_versions.outputs.versions }}"
 
           version_arr=($(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?'))
+          
+          echo "===================="
+          echo "${version_arr[@]}"
 
           echo "===================="
           CURRENT_STANDARD=${version_arr[0]}
