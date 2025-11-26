@@ -84,37 +84,38 @@ jobs:
           echo "Current LTS: ${CURRENT_LTS:-None}, Latest: $LATEST_LTS"
 
           # 检查是否有任何版本不同
-          if [[ "${CURRENT_STANDARD:-}" != "$LATEST_STANDARD" ]] || [[ "${CURRENT_DEVELOPMENT:-}" != "$LATEST_DEVELOPMENT" ]] || [[ "${CURRENT_LTS:-}" != "$LATEST_LTS" ]]; then
+          needs_update=false
+          commit_parts=()
+
+          if [[ "${CURRENT_STANDARD:-}" != "$LATEST_STANDARD" ]]; then
+            # 只更新 Standard 相关行
+            sed -i "s/- Standard: .*/- Standard: $LATEST_STANDARD/" README_EN.md
+            sed -i "s/- 经典版: .*/- 经典版: $LATEST_STANDARD/" README.md
+            commit_parts+=("Standard to $LATEST_STANDARD")
+            needs_update=true
+          fi
+
+          if [[ "${CURRENT_DEVELOPMENT:-}" != "$LATEST_DEVELOPMENT" ]]; then
+            # 只更新 Development 相关行
+            sed -i "s/- Development: .*/- Development: $LATEST_DEVELOPMENT/" README_EN.md
+            sed -i "s/- 正式版: .*/- 正式版: $LATEST_DEVELOPMENT/" README.md
+            commit_parts+=("Development to $LATEST_DEVELOPMENT")
+            needs_update=true
+          fi
+
+          if [[ "${CURRENT_LTS:-}" != "$LATEST_LTS" ]]; then
+            # 只更新 LTS 相关行
+            sed -i "s/- LTS: .*/- LTS: $LATEST_LTS/" README_EN.md
+            sed -i "s/- 开发版: .*/- 开发版: $LATEST_LTS/" README.md
+            commit_parts+=("LTS to $LATEST_LTS")
+            needs_update=true
+          fi
+
+          if [ "$needs_update" = true ]; then
             echo "New version detected. Updating README..."
             echo "needs_update=true" >> $GITHUB_OUTPUT
 
-            # 更新 README_EN.md 文件
-            sed -i "s/- Standard: .*/- Standard: $LATEST_STANDARD/" README_EN.md
-            sed -i "s/- Development: .*/- Development: $LATEST_DEVELOPMENT/" README_EN.md
-            sed -i "s/- LTS: .*/- LTS: $LATEST_LTS/" README_EN.md
-
-            # 更新 README.md 文件
-            sed -i "s/- 经典版: .*/- 经典版: $LATEST_STANDARD/" README.md
-            sed -i "s/- 正式版: .*/- 正式版: $LATEST_DEVELOPMENT/" README.md
-            sed -i "s/- 开发版: .*/- 开发版: $LATEST_LTS/" README.md
-
-            # 确定提交消息 - 只包含实际更新的版本
-            commit_parts=()
-            
-            if [[ "${CURRENT_STANDARD:-}" != "$LATEST_STANDARD" ]]; then
-              commit_parts+=("Standard to $LATEST_STANDARD")
-            fi
-            
-            if [[ "${CURRENT_DEVELOPMENT:-}" != "$LATEST_DEVELOPMENT" ]]; then
-              commit_parts+=("Development to $LATEST_DEVELOPMENT")
-            fi
-            
-            if [[ "${CURRENT_LTS:-}" != "$LATEST_LTS" ]]; then
-              commit_parts+=("LTS to $LATEST_LTS")
-            fi
-
-            # 构建提交消息
-            commit_msg=""
+            # 构建提交消息 - 只包含实际更新的版本
             case ${#commit_parts[@]} in
               1)
                 commit_msg="Update ${commit_parts[0]}"
