@@ -5,9 +5,9 @@
 `np.sh`: One-click deployment of the NodePass main program, providing high-performance TCP/UDP tunneling with multi-system support and flexible configuration.  
 `dash.sh`: One-click deployment of the NodePassDash control panel, simplifying tunnel management and monitoring with containerization and HTTPS support.
 
-- Standard: v1.222212.0
-- Development: v12342.12.0-b3
-- LTS: v1.1234230.3
+- Standard: v1.12.0
+- Development: v1.12.0-b3
+- LTS: v1.10.3
 
 ---
 
