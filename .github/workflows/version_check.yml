@@ -117,7 +117,3 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v7.0.0
         with:
           commit_message: ${{ steps.compare.outputs.commit_msg }}
-          
-          Standard: ${{ steps.latest_versions.outputs.STANDARD }}
-          Development: ${{ steps.latest_versions.outputs.DEVELOPMENT }}
-          LTS: ${{ steps.latest_versions.outputs.LTS }}
