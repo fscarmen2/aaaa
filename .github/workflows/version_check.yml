@@ -99,41 +99,33 @@ jobs:
             sed -i "s/- 开发版: .*/- 开发版: $LATEST_LTS/" README.md
 
             # 确定提交消息 - 只包含实际更新的版本
-            commit_msg="Update "
-            updated_count=0
+            commit_parts=()
             
             if [[ "${CURRENT_STANDARD:-}" != "$LATEST_STANDARD" ]]; then
-              if [ $updated_count -eq 0 ]; then
-                commit_msg+="Standard to $LATEST_STANDARD"
-              elif [ $updated_count -eq 1 ]; then
-                commit_msg+=", Standard to $LATEST_STANDARD"
-              else
-                commit_msg+=", and Standard to $LATEST_STANDARD"
-              fi
-              updated_count=$((updated_count+1))
+              commit_parts+=("Standard to $LATEST_STANDARD")
             fi
             
             if [[ "${CURRENT_DEVELOPMENT:-}" != "$LATEST_DEVELOPMENT" ]]; then
-              if [ $updated_count -eq 0 ]; then
-                commit_msg+="Development to $LATEST_DEVELOPMENT"
-              elif [ $updated_count -eq 1 ]; then
-                commit_msg+=", Development to $LATEST_DEVELOPMENT"
-              else
-                commit_msg+=", and Development to $LATEST_DEVELOPMENT"
-              fi
-              updated_count=$((updated_count+1))
+              commit_parts+=("Development to $LATEST_DEVELOPMENT")
             fi
             
             if [[ "${CURRENT_LTS:-}" != "$LATEST_LTS" ]]; then
-              if [ $updated_count -eq 0 ]; then
-                commit_msg+="LTS to $LATEST_LTS"
-              elif [ $updated_count -eq 1 ]; then
-                commit_msg+=", LTS to $LATEST_LTS"
-              else
-                commit_msg+=", and LTS to $LATEST_LTS"
-              fi
-              updated_count=$((updated_count+1))
+              commit_parts+=("LTS to $LATEST_LTS")
             fi
+
+            # 构建提交消息
+            commit_msg=""
+            case ${#commit_parts[@]} in
+              1)
+                commit_msg="Update ${commit_parts[0]}"
+                ;;
+              2)
+                commit_msg="Update ${commit_parts[0]} and ${commit_parts[1]}"
+                ;;
+              3)
+                commit_msg="Update ${commit_parts[0]}, ${commit_parts[1]} and ${commit_parts[2]}"
+                ;;
+            esac
 
             echo "commit_msg=$commit_msg" >> $GITHUB_OUTPUT
 
