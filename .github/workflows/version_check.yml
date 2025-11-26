@@ -68,11 +68,11 @@ jobs:
         id: compare
         run: |
           # 解析当前版本
-          
-          # 修复当前版本提取逻辑
-          CURRENT_STANDARD=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'Standard:[^[:space:]]*' | cut -d: -f2)
-          CURRENT_DEVELOPMENT=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'Development:[^[:space:]]*' | cut -d: -f2)
-          CURRENT_LTS=$(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'LTS:[^[:space:]]*' | cut -d: -f2)
+          version_arr=($(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?'))
+
+          CURRENT_STANDARD=${version_arr[0]}
+          CURRENT_DEVELOPMENT=${version_arr[1]}
+          CURRENT_LTS=${version_arr[2]}
 
           # 获取最新版本
           LATEST_STANDARD="${{ steps.latest_versions.outputs.STANDARD }}"
@@ -107,7 +107,7 @@ jobs:
             fi
             
             if [[ "${CURRENT_DEVELOPMENT:-}" != "$LATEST_DEVELOPMENT" ]]; then
-               echo "diff 2"
+              echo "diff 2"
               commit_parts+=("Development to $LATEST_DEVELOPMENT")
             fi
             
