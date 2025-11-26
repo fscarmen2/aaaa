@@ -5,12 +5,18 @@ on:
     - cron: '0 0,12 * * *'  # 每天运行两次（午夜和中午）
   workflow_dispatch:  # 允许手动触发
 
+# 添加权限配置以允许推送更改
+permissions:
+  contents: write
+
 jobs:
   version-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v6.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get current versions from README
         id: current_versions
@@ -117,3 +123,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v7.0.0
         with:
           commit_message: ${{ steps.compare.outputs.commit_msg }}
+          tagging_message: ''
