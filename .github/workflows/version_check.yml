@@ -4,9 +4,6 @@ on:
   schedule:
     - cron: '0 0,12 * * *'  # 每天运行两次（午夜和中午）
   workflow_dispatch:  # 允许手动触发
-  push:
-    branches:
-      - '**'
 
 # 添加权限配置以允许推送更改
 permissions:
@@ -109,9 +106,9 @@ jobs:
 
             commit_msg=""
             case ${#updated_versions[@]} in
-              1) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]@L}" ;;
-              2) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]@L} and ${updated_versions[1]} version to ${!updated_versions[1]@L}" ;;
-              3) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]@L}, ${updated_versions[1]} version to ${!updated_versions[1]@L} and ${updated_versions[2]} version to ${!updated_versions[2]@L}" ;;
+              1) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]_LATEST_VERSION}" ;;
+              2) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]_LATEST_VERSION} and ${updated_versions[1]} version to ${!updated_versions[1]_LATEST_VERSION}" ;;
+              3) commit_msg="Update ${updated_versions[0]} version to ${!updated_versions[0]_LATEST_VERSION}, ${updated_versions[1]} version to ${!updated_versions[1]_LATEST_VERSION} and ${updated_versions[2]} version to ${!updated_versions[2]_LATEST_VERSION}" ;;
             esac
 
             echo "commit_msg=$commit_msg" >> $GITHUB_OUTPUT
