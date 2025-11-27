@@ -2,7 +2,7 @@ name: Version Check and Update
 
 on:
   schedule:
-    - cron: '0 0,12 * * *'  # 每天运行两次（午夜和中午）
+    - cron: '0 16,04 * * *'  # 每天运行两次（午夜和中午，北京时间）
   workflow_dispatch:  # 允许手动触发
 
 # 添加权限配置以允许推送更改
@@ -22,7 +22,7 @@ jobs:
         id: current_versions
         run: |
           # 从 README_EN.md 提取当前版本
-          current_versions=$(sed -nE 's/^-[ ]+(Standard|Development|LTS):/\1:/p' README_EN.md)
+          current_versions=$(sed -nE 's/^-[ ]+(Stable|Development|LTS):/\1:/p' README_EN.md)
           versions=$(echo $current_versions | tr '\n' ' ')
           echo "versions=$versions" >> $GITHUB_OUTPUT
           echo "Current versions:"
@@ -31,7 +31,7 @@ jobs:
       - name: Get latest versions
         id: latest_versions
         run: |
-          # 获取 Standard 版本 (稳定版使用 latest 标签)
+          # 获取 Stable 版本 (稳定版使用 latest 标签)
           STABLE_LATEST_VERSION=$(curl -sL "https://api.github.com/repos/yosebyte/nodepass/releases/latest" | awk -F '"' '/tag_name/{print $4}')
 
           # 获取 Development 版本 (使用时间判断)
@@ -56,11 +56,11 @@ jobs:
           # 获取 LTS 版本
           LTS_LATEST_VERSION=$(curl -sL "https://api.github.com/repos/NodePassProject/nodepass-apt/releases/latest" | awk -F '"' '/tag_name/{print $4}')
 
-          echo "STANDARD=$STABLE_LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "STABLE=$STABLE_LATEST_VERSION" >> $GITHUB_OUTPUT
           echo "DEVELOPMENT=$DEV_LATEST_VERSION" >> $GITHUB_OUTPUT
           echo "LTS=$LTS_LATEST_VERSION" >> $GITHUB_OUTPUT
 
-          echo "Latest Standard: $STABLE_LATEST_VERSION"
+          echo "Latest Stable: $STABLE_LATEST_VERSION"
           echo "Latest Development: $DEV_LATEST_VERSION"
           echo "Latest LTS: $LTS_LATEST_VERSION"
 
@@ -70,39 +70,39 @@ jobs:
           # 解析当前版本
           version_arr=($(echo "${{ steps.current_versions.outputs.versions }}" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?'))
 
-          CURRENT_STANDARD=${version_arr[0]}
+          CURRENT_STABLE=${version_arr[0]}
           CURRENT_DEVELOPMENT=${version_arr[1]}
           CURRENT_LTS=${version_arr[2]}
 
           # 获取最新版本
-          LATEST_STANDARD="${{ steps.latest_versions.outputs.STANDARD }}"
+          LATEST_STABLE="${{ steps.latest_versions.outputs.STABLE }}"
           LATEST_DEVELOPMENT="${{ steps.latest_versions.outputs.DEVELOPMENT }}"
           LATEST_LTS="${{ steps.latest_versions.outputs.LTS }}"
 
-          echo "Current Standard: ${CURRENT_STANDARD:-None}, Latest: $LATEST_STANDARD"
+          echo "Current Stable: ${CURRENT_STABLE:-None}, Latest: $LATEST_STABLE"
           echo "Current Development: ${CURRENT_DEVELOPMENT:-None}, Latest: $LATEST_DEVELOPMENT"
           echo "Current LTS: ${CURRENT_LTS:-None}, Latest: $LATEST_LTS"
 
           # 检查是否有任何版本不同
-          if [[ "${CURRENT_STANDARD:-}" != "$LATEST_STANDARD" ]] || [[ "${CURRENT_DEVELOPMENT:-}" != "$LATEST_DEVELOPMENT" ]] || [[ "${CURRENT_LTS:-}" != "$LATEST_LTS" ]]; then
+          if [[ "${CURRENT_STABLE:-}" != "$LATEST_STABLE" ]] || [[ "${CURRENT_DEVELOPMENT:-}" != "$LATEST_DEVELOPMENT" ]] || [[ "${CURRENT_LTS:-}" != "$LATEST_LTS" ]]; then
             echo "New version detected. Updating README..."
             echo "needs_update=true" >> $GITHUB_OUTPUT
 
             # 更新 README_EN.md 文件
-            sed -i "s/- Standard: .*/- Standard: $LATEST_STANDARD/" README_EN.md
+            sed -i "s/- Stable: .*/- Stable: $LATEST_STABLE/" README_EN.md
             sed -i "s/- Development: .*/- Development: $LATEST_DEVELOPMENT/" README_EN.md
             sed -i "s/- LTS: .*/- LTS: $LATEST_LTS/" README_EN.md
 
             # 更新 README.md 文件
-            sed -i "s/- 正式版: .*/- 正式版: $LATEST_STANDARD/" README.md
+            sed -i "s/- 正式版: .*/- 正式版: $LATEST_STABLE/" README.md
             sed -i "s/- 开发版: .*/- 开发版: $LATEST_DEVELOPMENT/" README.md
             sed -i "s/- 经典版: .*/- 经典版: $LATEST_LTS/" README.md
 
             # 确定提交消息 - 只包含实际更新的版本
             commit_parts=()
 
-            if [[ "${CURRENT_STANDARD:-}" != "$LATEST_STANDARD" ]]; then
-              commit_parts+=("Standard to $LATEST_STANDARD")
+            if [[ "${CURRENT_STABLE:-}" != "$LATEST_STABLE" ]]; then
+              commit_parts+=("Stable to $LATEST_STABLE")
             fi
 
             if [[ "${CURRENT_DEVELOPMENT:-}" != "$LATEST_DEVELOPMENT" ]]; then
@@ -130,7 +130,7 @@ jobs:
             echo "commit_msg=$commit_msg" >> $GITHUB_OUTPUT
 
             echo "README updated with new versions:"
-            echo "  Standard: $LATEST_STANDARD"
+            echo "  Stable: $LATEST_STABLE"
             echo "  Development: $LATEST_DEVELOPMENT"
             echo "  LTS: $LATEST_LTS"
           else
