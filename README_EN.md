@@ -2,12 +2,12 @@
 
 [简体中文](README.md) | English
 
-`np.sh`: One-click deployment of the NodePass main program, providing high-performance TCP/UDP tunneling with multi-system support and flexible configuration.  
+`np.sh`: One-click deployment of the NodePass main program, providing high-performance TCP/UDP tunneling with multi-system support and flexible configuration.
 `dash.sh`: One-click deployment of the NodePassDash control panel, simplifying tunnel management and monitoring with containerization and HTTPS support.
 
-- Standard: v1.12.0
-- Development: v1.12.0-b3
-- LTS: v1.10.3
+- Standard: v1.23.3-beta.3
+- Development: v1.10.5
+- LTS: v1.20.2
 
 ---
 
@@ -26,6 +26,8 @@
   - [Features](#features-1)
   - [Usage Instructions](#usage-instructions)
   - [Uninstallation Instructions](#uninstallation-instructions)
+  - [Update Version](#update-version)
+  - [Reset Password](#reset-password)
 - [Feedback](#feedback)
 - [Deployment Screenshots](#deployment-screenshots)
 
@@ -57,6 +59,7 @@
 - 🛠️ One-click service start, stop, restart, and uninstall
 - 🔄 Automatic updates to the latest version
 - 🐳 Automatic recognition of container environments
+- 📦 Supports installation of stable, development, and classic versions (LTS Long Term Support)
 
 ---
 
@@ -64,18 +67,18 @@
 
 #### Interactive Deployment
 
-```bash
+```
 bash <(wget -qO- https://run.nodepass.eu/np.sh)
 ```
 or
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/np.sh)
 ```
 
 Follow the prompts to provide the following information:
 
 - Language selection (default: Chinese)
-- Server IP (default: 127.0.0.1)
+- Server IP (If it is 127.0.0.1, you can choose to create an instance with an intranet penetration API.)
 - Port (leave blank for auto-assigned port in the 1024–8192 range)
 - API prefix (default: `api`)
 - TLS mode (0: no encryption, 1: self-signed certificate, 2: custom certificate)
@@ -87,12 +90,13 @@ Follow the prompts to provide the following information:
 <details>
     <summary>Example 1: No TLS encryption</summary>
 
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/np.sh) \
   -i \
   --language zh \
   --server_ip 127.0.0.1 \
   --user_port 18080 \
+  --version stable \
   --prefix api \
   --tls_mode 0
 ```
@@ -102,12 +106,13 @@ bash <(curl -sSL https://run.nodepass.eu/np.sh) \
 <details>
     <summary>Example 2: Self-signed certificate</summary>
 
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/np.sh) \
   -i \
   --language en \
   --server_ip localhost \
   --user_port 18080 \
+  --version dev \
   --prefix api \
   --tls_mode 1
 ```
@@ -117,12 +122,13 @@ bash <(curl -sSL https://run.nodepass.eu/np.sh) \
 <details>
     <summary>Example 3: Custom certificate</summary>
 
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/np.sh) \
   -i \
   --language zh \
   --server_ip 1.2.3.4 \
   --user_port 18080 \
+  --version lts \
   --prefix api \
   --tls_mode 2 \
   --cert_file </path/to/cert.pem> \
@@ -137,16 +143,17 @@ bash <(curl -sSL https://run.nodepass.eu/np.sh) \
 
 After installation, the `np` shortcut command is created:
 
-| Command   | Description                   |
-|-----------|-------------------------------|
-| `np`      | Display interactive menu      |
-| `np -i`   | Install NodePass             |
-| `np -u`   | Uninstall NodePass           |
-| `np -v`   | Upgrade NodePass             |
-| `np -o`   | Start/stop service           |
-| `np -k`   | Change API key               |
-| `np -s`   | View API information         |
-| `np -h`   | Display help information     |
+| Command   | Description                          |
+|-----------|--------------------------------------|
+| `np`      | Display interactive menu             |
+| `np -i`   | Install NodePass                     |
+| `np -u`   | Uninstall NodePass                   |
+| `np -v`   | Upgrade NodePass                     |
+| `np -t`   | Switch between stable, dev and lts   |
+| `np -o`   | Start/stop service                   |
+| `np -k`   | Change API key                       |
+| `np -s`   | View API information                 |
+| `np -h`   | Display help information             |
 
 ---
 
@@ -155,7 +162,10 @@ After installation, the `np` shortcut command is created:
 ```
 /etc/nodepass/
 ├── data                # Configuration data
-├── nodepass            # Main program
+├── nodepass            # Main program symlink pointing to the currently used kernel file
+├── np-dev              # Development version kernel file
+├── np-lts              # Classic version (LTS Long Term Support) kernel file
+├── np-stb              # Stable version kernel file
 ├── nodepass.gob        # Data storage file
 └── np.sh               # Deployment script
 ```
@@ -169,6 +179,7 @@ After installation, the `np` shortcut command is created:
 - 🚀 One-click deployment of NodePassDash control panel
 - 🐧 Supports Debian, Ubuntu, CentOS
 - 🔧 Automatic detection of system and dependencies
+- 🌍 Host network mode is used, enabling seamless integration with host APIs
 - 🐳 Supports Docker and Podman for container deployment
 - 🔄 Automatic reverse proxy configuration (with HTTPS support)
 - 🔐 Automatic CA SSL certificate issuance (for domain-based deployment)
@@ -180,11 +191,11 @@ After installation, the `np` shortcut command is created:
 
 1. **Run the script**:
 
-```bash
+```
 bash <(wget -qO- https://run.nodepass.eu/dash.sh)
 ```
 or
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/dash.sh)
 ```
 
@@ -203,25 +214,55 @@ bash <(curl -sSL https://run.nodepass.eu/dash.sh)
 | Host Path                   | Container Path      | Purpose       |
 |-----------------------------|---------------------|---------------|
 | `~/nodepassdash/logs`       | `/app/logs`         | Log files     |
-| `~/nodepassdash/public`     | `/app/public`       | Public resources |
+| `~/nodepassdash/db`         | `/app/db`           | Database      |
 
 5. **Completion prompt**: The script will output the access address and admin account details upon completion.
-
----
 
 ### Uninstallation Instructions
 
 To uninstall the NodePassDash control panel:
 
-```bash
+```
 bash <(wget -qO- https://run.nodepass.eu/dash.sh) uninstall
 ```
 or
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/dash.sh) uninstall
 ```
 
 This will clean up the container, configuration files, and mounted directories.
+
+### Update Version
+
+Update the NodePassDash container:
+
+```
+bash <(wget -qO- https://run.nodepass.eu/dash.sh) update
+```
+or
+```
+bash <(curl -sSL https://run.nodepass.eu/dash.sh) update
+```
+
+This will update based on the local and remote versions.
+
+### Reset Password
+
+```
+bash <(wget -qO- https://run.nodepass.eu/dash.sh) resetpwd
+```
+or
+```
+bash <(curl -sSL https://run.nodepass.eu/dash.sh) resetpwd
+```
+
+---
+
+## Deployment Screenshots
+
+<img width="690" alt="image" src="https://github.com/user-attachments/assets/893a3856-ec69-488f-bb99-5df26b4fb4e7" />
+
+<img width="690" alt="image" src="https://github.com/user-attachments/assets/61e01872-f401-485d-aa9a-8c1388e76a5b" />
 
 ---
 
