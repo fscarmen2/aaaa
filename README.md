@@ -6,9 +6,9 @@
 
 `dash.sh`: 一键部署 NodePassDash 控制面板，简化隧道管理和监控，支持容器化和 HTTPS 配置。
 
-- 经典版: v1.12.0
-- 正式版: v1.12.0-b3
-- 开发版: v1.10.3
+- 正式版: v1.20.2
+- 开发版: v1.23.3-beta.3
+- 经典版: v1.10.5
 
 ---
 
@@ -17,16 +17,13 @@
 * [项目介绍](#项目介绍)
 * [系统要求](#系统要求)
 * [一、np.sh 脚本（主程序安装）](#一npsh-脚本主程序安装)
-
   * [功能特色](#功能特色)
   * [部署方法](#部署方法)
-
     * [交互式部署](#交互式部署)
     * [无交互式部署](#无交互式部署)
   * [部署后的快捷指令](#部署后的快捷指令)
   * [目录结构](#目录结构)
 * [二、dash.sh 脚本（控制面板安装）](#二dashsh-脚本控制面板安装)
-
   * [功能特色](#功能特色-1)
   * [使用说明](#使用说明)
   * [卸载说明](#卸载说明)
@@ -58,13 +55,12 @@
 * ✅ 多系统支持
 * 🌐 支持中英文界面
 * 🔍 自动检测架构与依赖
-* 🌍 使用 Host 网络模式，可直接与宿主机 API 无缝对接
 * 🔧 灵活配置端口、API 前缀、TLS 模式
 * 🔐 支持无加密、自签名或自定义证书
 * 🛠️ 支持服务一键启动、停止、重启、卸载
 * 🔄 自动更新保持最新版本
 * 🐳 自动识别容器环境
-* 📦 支持安装稳定版或开发版
+* 📦 支持安装稳定版、开发版和经典版（LTS长期支持版）
 
 ---
 
@@ -72,11 +68,11 @@
 
 #### 交互式部署
 
-```bash
+```
 bash <(wget -qO- https://run.nodepass.eu/np.sh)
 ```
 或
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/np.sh)
 ```
 
@@ -94,47 +90,48 @@ bash <(curl -sSL https://run.nodepass.eu/np.sh)
 
 <details><summary>示例1：无TLS加密</summary>
 
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/np.sh) \
   -i \
   --language zh \
   --server_ip 127.0.0.1 \
   --user_port 18080 \
+  --version stable \
   --prefix api \
-  --tls_mode 0 \
-  --version stable
+  --tls_mode 0
 ```
 
 </details>
 
 <details><summary>示例2：自签名证书</summary>
 
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/np.sh) \
   -i \
   --language en \
   --server_ip localhost \
   --user_port 18080 \
+  --version dev \
   --prefix api \
-  --tls_mode 1 \
-  --version dev
+  --tls_mode 1
 ```
 
 </details>
 
 <details><summary>示例3：自定义证书</summary>
 
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/np.sh) \
   -i \
   --language zh \
   --server_ip 1.2.3.4 \
   --user_port 18080 \
+  --version lts \
   --prefix api \
   --tls_mode 2 \
-  --version stable \
   --cert_file </path/to/cert.pem> \
-  --key_file </path/to/key.pem>
+  --key_file </path/to/key.pem> \
+  --prefix api
 ```
 
 </details>
@@ -151,7 +148,7 @@ bash <(curl -sSL https://run.nodepass.eu/np.sh) \
 | `np -i` | 安装 NodePass |
 | `np -u` | 卸载 NodePass |
 | `np -v` | 升级 NodePass |
-| `np -t` | 在稳定版和开发版之间切换 |
+| `np -t` | 在稳定版、开发版和经典版之间切换 |
 | `np -o` | 启动/停止服务   |
 | `np -k` | 更换 API key  |
 | `np -k` | 更换 API 内网穿透的服务器 |
@@ -165,7 +162,10 @@ bash <(curl -sSL https://run.nodepass.eu/np.sh) \
 ```
 /etc/nodepass/
 ├── data                # 配置数据
-├── nodepass            # 主程序
+├── nodepass            # 主程序软链接，指向当前使用的内核文件
+├── np-dev              # 开发版内核文件
+├── np-lts              # 经典版（LTS长期支持版）内核文件
+├── np-stb              # 稳定版内核文件
 ├── nodepass.gob        # 数据存储文件
 └── np.sh               # 部署脚本
 ```
@@ -190,11 +190,11 @@ bash <(curl -sSL https://run.nodepass.eu/np.sh) \
 
 1. **运行脚本**：
 
-```bash
+```
 bash <(wget -qO- https://run.nodepass.eu/dash.sh) install
 ```
 或
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/dash.sh) install
 ```
 
@@ -221,11 +221,11 @@ bash <(curl -sSL https://run.nodepass.eu/dash.sh) install
 
 卸载 NodePassDash 控制面板：
 
-```bash
+```
 bash <(wget -qO- https://run.nodepass.eu/dash.sh) uninstall
 ```
 或
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/dash.sh) uninstall
 ```
 
@@ -235,11 +235,11 @@ bash <(curl -sSL https://run.nodepass.eu/dash.sh) uninstall
 
 更新 NodePassDash 容器：
 
-```bash
+```
 bash <(wget -qO- https://run.nodepass.eu/dash.sh) update
 ```
 或
-```bash
+```
 bash <(curl -sSL https://run.nodepass.eu/dash.sh) update
 ```
 
