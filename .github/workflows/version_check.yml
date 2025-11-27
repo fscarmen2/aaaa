@@ -94,25 +94,22 @@ jobs:
             sed -i "s/- LTS: .*/- LTS: $LATEST_LTS/" README_EN.md
 
             # 更新 README.md 文件
-            sed -i "s/- 经典版: .*/- 经典版: $LATEST_STANDARD/" README.md
-            sed -i "s/- 正式版: .*/- 正式版: $LATEST_DEVELOPMENT/" README.md
-            sed -i "s/- 开发版: .*/- 开发版: $LATEST_LTS/" README.md
+            sed -i "s/- 正式版: .*/- 正式版: $LATEST_STANDARD/" README.md
+            sed -i "s/- 开发版: .*/- 开发版: $LATEST_DEVELOPMENT/" README.md
+            sed -i "s/- 经典版: .*/- 经典版: $LATEST_LTS/" README.md
 
             # 确定提交消息 - 只包含实际更新的版本
             commit_parts=()
-            
+
             if [[ "${CURRENT_STANDARD:-}" != "$LATEST_STANDARD" ]]; then
-              echo "diff 1"
               commit_parts+=("Standard to $LATEST_STANDARD")
             fi
-            
+
             if [[ "${CURRENT_DEVELOPMENT:-}" != "$LATEST_DEVELOPMENT" ]]; then
-              echo "diff 2"
               commit_parts+=("Development to $LATEST_DEVELOPMENT")
             fi
-            
+
             if [[ "${CURRENT_LTS:-}" != "$LATEST_LTS" ]]; then
-              echo "diff 3"
               commit_parts+=("LTS to $LATEST_LTS")
             fi
 
